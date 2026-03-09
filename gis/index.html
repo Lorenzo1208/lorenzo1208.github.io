@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz GIS — EGFF 2024</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
       --bg: #0d0d0d;
       --surface: #161616;
       --border: #2a2a2a;
       --accent: #c8f060;
-      --accent-dim: rgba(200,240,96,0.1);
+      --accent-dim: rgba(200, 240, 96, 0.1);
       --text: #f0f0f0;
       --muted: #666;
       --wrong: #ff5f5f;
-      --wrong-dim: rgba(255,95,95,0.1);
+      --wrong-dim: rgba(255, 95, 95, 0.1);
     }
 
     body {
@@ -46,7 +54,10 @@
       letter-spacing: 0.1em;
       transition: color 0.15s;
     }
-    .back:hover { color: var(--accent); }
+
+    .back:hover {
+      color: var(--accent);
+    }
 
     .header-title {
       font-family: 'Syne', sans-serif;
@@ -81,7 +92,6 @@
       margin: 0 auto;
     }
 
-    /* Quiz screen */
     #quiz-screen {}
 
     .question-meta {
@@ -142,16 +152,22 @@
       border-left: 2px solid var(--accent);
     }
 
-    .option.correct .option-letter { color: var(--accent); }
+    .option.correct .option-letter {
+      color: var(--accent);
+    }
 
     .option.wrong {
       background: var(--wrong-dim);
       border-left: 2px solid var(--wrong);
     }
 
-    .option.wrong .option-letter { color: var(--wrong); }
+    .option.wrong .option-letter {
+      color: var(--wrong);
+    }
 
-    .option:disabled { cursor: default; }
+    .option:disabled {
+      cursor: default;
+    }
 
     .explanation {
       font-size: 0.78rem;
@@ -163,7 +179,9 @@
       display: none;
     }
 
-    .explanation.visible { display: block; }
+    .explanation.visible {
+      display: block;
+    }
 
     .btn-next {
       background: var(--accent);
@@ -179,10 +197,14 @@
       transition: opacity 0.15s;
     }
 
-    .btn-next:hover { opacity: 0.85; }
-    .btn-next.visible { display: inline-block; }
+    .btn-next:hover {
+      opacity: 0.85;
+    }
 
-    /* Results screen */
+    .btn-next.visible {
+      display: inline-block;
+    }
+
     #result-screen {
       display: none;
       text-align: left;
@@ -231,7 +253,9 @@
       margin-right: 1rem;
     }
 
-    .btn-retry:hover { background: var(--accent-dim); }
+    .btn-retry:hover {
+      background: var(--accent-dim);
+    }
 
     .btn-hub {
       font-size: 0.72rem;
@@ -242,188 +266,523 @@
       transition: color 0.15s;
     }
 
-    .btn-hub:hover { color: var(--text); }
+    .btn-hub:hover {
+      color: var(--text);
+    }
   </style>
 </head>
+
 <body>
 
-<header>
-  <a class="back" href="../">← Hub</a>
-  <div class="header-title">GIS Foundation</div>
-  <div class="progress-wrap">
-    <span id="progress-text">1 / 5</span>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
-  </div>
-</header>
+  <header>
+    <a class="back" href="../">← Hub</a>
+    <div class="header-title">GIS Foundation</div>
+    <div class="progress-wrap">
+      <span id="progress-text">1 / 32</span>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:3.125%"></div>
+      </div>
+    </div>
+  </header>
 
-<main>
-  <div id="quiz-screen">
-    <div class="question-meta" id="question-domain">Domaine · —</div>
-    <div class="question-text" id="question-text"></div>
-    <div class="options" id="options-list"></div>
-    <div class="explanation" id="explanation"></div>
-    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
-  </div>
+  <main>
+    <div id="quiz-screen">
+      <div class="question-meta" id="question-domain">Domaine · —</div>
+      <div class="question-text" id="question-text"></div>
+      <div class="options" id="options-list"></div>
+      <div class="explanation" id="explanation"></div>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
+    </div>
 
-  <div id="result-screen">
-    <div class="result-label">— Résultat final</div>
-    <div class="result-score" id="result-score"></div>
-    <div class="result-sub" id="result-sub"></div>
-    <div class="result-breakdown"></div>
-    <button class="btn-retry" onclick="restart()">Recommencer</button>
-    <a class="btn-hub" href="../">← Retour au hub</a>
-  </div>
-</main>
+    <div id="result-screen">
+      <div class="result-label">— Résultat final</div>
+      <div class="result-score" id="result-score"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="result-breakdown"></div>
+      <button class="btn-retry" onclick="restart()">Recommencer</button>
+      <a class="btn-hub" href="../">← Retour au hub</a>
+    </div>
+  </main>
 
-<script>
-const questions = [
-  {
-    domain: "Cartography & Visualization",
-    question: "Which map projection preserves the shape of small areas but distorts area at higher latitudes?",
-    options: ["Equal-area projection", "Conformal projection", "Equidistant projection", "Azimuthal projection"],
-    answer: 1,
-    explanation: "Conformal projections (like Mercator) preserve local shapes and angles but significantly distort area, especially near the poles."
-  },
-  {
-    domain: "Data Management",
-    question: "What is the primary difference between a Feature Class and a Shapefile in an Esri environment?",
-    options: [
-      "Shapefiles support topology, Feature Classes do not",
-      "Feature Classes can store raster data",
-      "Feature Classes reside in a geodatabase and support longer field names and subtypes",
-      "Shapefiles can hold unlimited attributes"
-    ],
-    answer: 2,
-    explanation: "Feature Classes in a geodatabase support longer field names (up to 64 chars), subtypes, domains, and relationships. Shapefiles are standalone and more limited."
-  },
-  {
-    domain: "Spatial Analysis",
-    question: "A buffer analysis on a vector point layer with a distance of 500m will produce:",
-    options: [
-      "A raster with cells within 500m highlighted",
-      "A polygon layer with circles of 500m radius around each point",
-      "A line layer connecting all points within 500m",
-      "A new point layer offset by 500m"
-    ],
-    answer: 1,
-    explanation: "Buffer analysis creates polygon features representing the area within a specified distance of input features."
-  },
-  {
-    domain: "Imagery & Remote Sensing",
-    question: "What does NDVI measure, and which bands are typically used?",
-    options: [
-      "Water content — Blue and Green",
-      "Urban density — Red and SWIR",
-      "Vegetation health — Near Infrared and Red",
-      "Soil moisture — Thermal and SWIR"
-    ],
-    answer: 2,
-    explanation: "NDVI (Normalized Difference Vegetation Index) = (NIR - Red) / (NIR + Red). High values indicate dense, healthy vegetation."
-  },
-  {
-    domain: "GIS Fundamentals",
-    question: "In a geodatabase, what is the purpose of a 'domain'?",
-    options: [
-      "To define coordinate systems for a dataset",
-      "To constrain valid attribute values for a field",
-      "To store metadata about the database",
-      "To link two feature classes together"
-    ],
-    answer: 1,
-    explanation: "Domains define valid values (coded value domain) or valid ranges (range domain) for attributes, ensuring data integrity across the geodatabase."
-  }
-];
+  <script>
+    const questions = [
+      {
+        domain: "Data Discovery",
+        question: "Which of the following best describes vector data?",
+        options: [
+          "Geographic features represented as points, lines and polygons",
+          "A grid of cells each containing a single value",
+          "A photograph taken from a satellite",
+          "A table of coordinates without geometry"
+        ],
+        answer: 0,
+        explanation: "Vector data represents geographic features as discrete geometric shapes: points (cities), lines (roads) or polygons (regions). Raster data is the grid of cells."
+      },
+      {
+        domain: "Data Discovery",
+        question: "A dataset shows land surface temperature across France. What data type is this?",
+        options: [
+          "Vector polygon layer",
+          "Attribute table with coordinates",
+          "Raster dataset",
+          "Vector point layer"
+        ],
+        answer: 2,
+        explanation: "Temperature across a continuous surface is best represented as a raster — a grid where each pixel holds a temperature value. Vector data stores discrete features, not continuous surfaces."
+      },
+      {
+        domain: "Data Discovery",
+        question: "What is a coordinate system used for in GIS?",
+        options: [
+          "To compress the size of a geodatabase",
+          "To store attribute data in a table",
+          "To control the symbology of a layer",
+          "To define the location of features on the Earth's surface"
+        ],
+        answer: 3,
+        explanation: "A coordinate system provides a mathematical framework for identifying the precise geographic location of features on the Earth's surface."
+      },
+      {
+        domain: "Data Discovery",
+        question: "Which coordinate system is used globally by GPS devices and is the basis for most web mapping?",
+        options: [
+          "Lambert 93",
+          "RGF93",
+          "Web Mercator",
+          "WGS84"
+        ],
+        answer: 3,
+        explanation: "WGS84 is the global datum used by GPS. Web Mercator uses WGS84 as its datum but is a projected coordinate system used for web map display — they are not the same thing."
+      },
+      {
+        domain: "Data Discovery",
+        question: "What is ArcGIS Living Atlas of the World?",
+        options: [
+          "A curated collection of global authoritative geographic content",
+          "A desktop GIS application for editing features",
+          "A Python library for spatial analysis",
+          "A tool for creating 3D scenes in ArcGIS Pro"
+        ],
+        answer: 0,
+        explanation: "ArcGIS Living Atlas provides ready-to-use maps, apps and data layers maintained by Esri and trusted organizations — covering topics like demographics, environment, basemaps and imagery."
+      },
+      {
+        domain: "Data Discovery",
+        question: "In ArcGIS Online, what does 'authoritative content' mean?",
+        options: [
+          "Content that has been compressed for faster loading",
+          "Content created by any registered user",
+          "Content stored exclusively in a File Geodatabase",
+          "Content validated and maintained by trusted organizations or Esri"
+        ],
+        answer: 3,
+        explanation: "Authoritative content is verified, endorsed and maintained by Esri or trusted data providers such as government agencies, ensuring reliability and accuracy."
+      },
+      {
+        domain: "Data Discovery",
+        question: "What does DMS stand for in coordinate units?",
+        options: [
+          "Digital Map System",
+          "Degrees Minutes Seconds",
+          "Data Management Standard",
+          "Dynamic Mapping Service"
+        ],
+        answer: 1,
+        explanation: "DMS stands for Degrees Minutes Seconds — a traditional way to express geographic coordinates inherited from astronomy, e.g. 43°36'17\" N, 1°26'39\" E for Toulouse."
+      },
+      {
+        domain: "Data Discovery",
+        question: "A layer uses the Lambert 93 coordinate system. What does this tell you?",
+        options: [
+          "The data is stored as a raster",
+          "The data is in a global coordinate system usable worldwide",
+          "The data is projected specifically for use in metropolitan France",
+          "The data can only be viewed in ArcGIS Pro"
+        ],
+        answer: 2,
+        explanation: "Lambert 93 is the official projected coordinate system for metropolitan France. It combines the RGF93 datum with a Lambert conformal conic projection, optimized for accuracy across France."
+      },
+      {
+        domain: "Data Discovery",
+        question: "A raster dataset has a spatial resolution of 10m. What does this mean?",
+        options: [
+          "The dataset covers an area of 10 square meters",
+          "Each pixel represents a 10m × 10m area on the ground",
+          "The file size is limited to 10MB",
+          "The dataset has 10 meter accuracy in its attribute table"
+        ],
+        answer: 1,
+        explanation: "Spatial resolution defines the size of each pixel in real-world units. A 10m resolution means each cell covers a 10×10 meter area on the ground — finer resolution means more detail."
+      },
+      {
+        domain: "Data Discovery",
+        question: "Which of the following is a fundamental concept of GIS?",
+        options: [
+          "GIS requires Python to perform any analysis",
+          "All geographic data must be stored in raster format",
+          "Layers of geographic data can be overlaid and analyzed spatially",
+          "GIS can only work with data collected by GPS devices"
+        ],
+        answer: 2,
+        explanation: "The core concept of GIS is the ability to overlay and analyze multiple layers of geographic information together to answer spatial questions and support decision-making."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "Which map type is best for showing population density across French departments?",
+        options: [
+          "Flow map with proportional symbols",
+          "Dot density map with qualitative colors",
+          "Choropleth map with a sequential color scheme",
+          "Heat map with diverging colors"
+        ],
+        answer: 2,
+        explanation: "A choropleth map uses color shading to represent numeric values across polygon areas. A sequential color scheme (light to dark) is appropriate for data going in one direction like density."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "What is a basemap in ArcGIS?",
+        options: [
+          "The first operational layer added to any project",
+          "A background map providing geographic context beneath your data layers",
+          "A map exported to PDF format for sharing",
+          "A map that only contains raster elevation data"
+        ],
+        answer: 1,
+        explanation: "A basemap provides geographic reference context (streets, satellite imagery, topography) beneath your operational data layers. It is not the same as the first layer you add."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "Which map element shows the relationship between distance on the map and distance in the real world?",
+        options: [
+          "North arrow",
+          "Legend",
+          "Scale bar",
+          "Title block"
+        ],
+        answer: 2,
+        explanation: "The scale bar visually represents the ratio between map distance and real-world distance, allowing users to estimate actual distances directly on the map."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "What is the correct definition of a 'large scale map'?",
+        options: [
+          "A map showing a large area like an entire continent",
+          "A map with a very large file size",
+          "A map that covers more than one country",
+          "A map showing a small area in high detail with a ratio like 1:5 000"
+        ],
+        answer: 3,
+        explanation: "A large scale map has a numerically large fraction (1:5,000 is larger than 1:1,000,000 mathematically) and shows a small area in great detail — like a neighborhood rather than a country."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "In ArcGIS Pro, where do you assemble a map with title, legend, north arrow and scale bar for printing?",
+        options: [
+          "The layout view",
+          "The attribute table view",
+          "The geoprocessing pane",
+          "The catalog pane"
+        ],
+        answer: 0,
+        explanation: "The layout view in ArcGIS Pro is where you design the final map composition for printing or export, assembling elements like title, legend, north arrow, scale bar and map frames."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "Which symbology type would you use to represent land use categories such as forest, urban and agricultural?",
+        options: [
+          "Graduated colors",
+          "Unique values",
+          "Proportional symbols",
+          "Heat map"
+        ],
+        answer: 1,
+        explanation: "Unique values assigns a distinct color or symbol to each category. It is ideal for qualitative data with no numeric order — like land use types where no category is 'more' than another."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "What does a diverging color scheme indicate on a map?",
+        options: [
+          "Data that goes from low to high in one direction only",
+          "Data representing unordered qualitative categories",
+          "Data that has been normalized by area",
+          "Data with a meaningful midpoint and values going in two opposite directions"
+        ],
+        answer: 3,
+        explanation: "Diverging color schemes have a neutral midpoint with contrasting colors extending in both directions — ideal for data like temperature anomalies above and below average, or political party margins."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "What is the main distortion caused by the Web Mercator projection?",
+        options: [
+          "It distorts angles and directions globally",
+          "It distorts shapes near the equator",
+          "It distorts the size of areas especially near the poles",
+          "It distorts distances in tropical regions only"
+        ],
+        answer: 2,
+        explanation: "Web Mercator is conformal — it preserves local shapes and angles but significantly distorts area. Areas near the poles like Greenland appear much larger than they actually are."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "Which classification method guarantees the same number of features in each class?",
+        options: [
+          "Natural breaks",
+          "Standard deviation",
+          "Equal interval",
+          "Quantile"
+        ],
+        answer: 3,
+        explanation: "Quantile classification puts exactly the same number of features in each class regardless of value ranges. Equal interval uses equal value ranges which can result in empty classes if data is skewed."
+      },
+      {
+        domain: "Mapping & Visualization",
+        question: "Which classification method identifies natural groupings in data by minimizing variance within classes?",
+        options: [
+          "Quantile",
+          "Natural breaks (Jenks)",
+          "Equal interval",
+          "Standard deviation"
+        ],
+        answer: 1,
+        explanation: "Natural Breaks (Jenks) finds the best class boundaries by maximizing differences between classes and minimizing differences within classes — ideal when data has natural clusters."
+      },
+      {
+        domain: "Processing & Analysis",
+        question: "Which geoprocessing tool creates a zone of a specified distance around a feature?",
+        options: [
+          "Dissolve",
+          "Clip",
+          "Buffer",
+          "Intersect"
+        ],
+        answer: 2,
+        explanation: "Buffer creates a polygon zone representing the area within a specified distance of input features. It works on points, lines and polygons and is often the first step in proximity analysis."
+      },
+      {
+        domain: "Processing & Analysis",
+        question: "You want to keep only the roads that fall within the boundaries of a specific region. Which tool do you use?",
+        options: [
+          "Union",
+          "Merge",
+          "Dissolve",
+          "Clip"
+        ],
+        answer: 3,
+        explanation: "Clip uses a layer as a 'cookie cutter' to extract features from another layer that fall within its boundaries. Only the input layer's attributes are kept — the clip boundary layer disappears."
+      },
+      {
+        domain: "Processing & Analysis",
+        question: "What is the difference between Select by Attribute and Select by Location?",
+        options: [
+          "They produce identical results in all cases",
+          "Select by Attribute filters by field values, Select by Location filters by spatial relationships",
+          "Select by Location uses field values, Select by Attribute uses spatial relationships",
+          "Select by Attribute only works in ArcGIS Online"
+        ],
+        answer: 1,
+        explanation: "Select by Attribute queries the attribute table using field values (e.g. population > 10,000). Select by Location selects features based on their geographic position relative to another layer."
+      },
+      {
+        domain: "Processing & Analysis",
+        question: "You need to find all schools within 500 meters of a highway. What is the correct workflow?",
+        options: [
+          "Clip schools with the highway layer directly",
+          "Dissolve highway then Merge with schools layer",
+          "Intersect highway directly with schools layer",
+          "Buffer highway by 500m then Intersect result with schools layer"
+        ],
+        answer: 3,
+        explanation: "Step 1: Buffer the highway by 500m to create a zone. Step 2: Intersect that zone with the schools layer to keep only schools that fall within the buffer. This is the standard proximity workflow."
+      },
+      {
+        domain: "Processing & Analysis",
+        question: "In ArcGIS Pro, what is the attribute table used for?",
+        options: [
+          "Changing the coordinate system of a layer",
+          "Creating new basemaps for the project",
+          "Exporting maps to PDF format",
+          "Viewing and editing the non-spatial data associated with each feature"
+        ],
+        answer: 3,
+        explanation: "The attribute table stores the non-spatial information linked to each feature — like a spreadsheet with one row per feature. You can view, query, edit and calculate field values here."
+      },
+      {
+        domain: "Processing & Analysis",
+        question: "You have 96 department polygons each with a 'region' attribute. You want to create 13 region polygons. Which tool do you use?",
+        options: [
+          "Dissolve",
+          "Union",
+          "Merge",
+          "Intersect"
+        ],
+        answer: 0,
+        explanation: "Dissolve merges features that share the same attribute value into a single polygon. Specifying 'region' as the dissolve field will merge all departments of the same region into one polygon."
+      },
+      {
+        domain: "Content Management & Sharing",
+        question: "In ArcGIS Online, what is an 'item'?",
+        options: [
+          "A geoprocessing tool result stored temporarily",
+          "A single feature on a map",
+          "A coordinate system definition file",
+          "Any piece of content such as a map, layer, file or application stored in the portal"
+        ],
+        answer: 3,
+        explanation: "An item in ArcGIS Online is any piece of content stored in the portal — maps, layers, applications, files, tools, etc. Each item has its own details page with metadata and sharing settings."
+      },
+      {
+        domain: "Content Management & Sharing",
+        question: "Before sharing a map from ArcGIS Pro to ArcGIS Online, what should you verify?",
+        options: [
+          "That Python is installed on the machine",
+          "That the map uses Lambert 93 coordinate system",
+          "That the map has been validated and all layers are accessible",
+          "That all layers use raster format only"
+        ],
+        answer: 2,
+        explanation: "Before sharing, validate the map to ensure all data sources are accessible, layer names are appropriate and the map will display correctly in ArcGIS Online."
+      },
+      {
+        domain: "Content Management & Sharing",
+        question: "In ArcGIS Online, what does setting content as 'Public' mean?",
+        options: [
+          "Only members of your organization can access it",
+          "The content requires a login to access",
+          "Only administrators can view and edit it",
+          "Anyone on the internet can discover and access the content"
+        ],
+        answer: 3,
+        explanation: "Public content in ArcGIS Online is accessible to anyone without needing an account, making it fully discoverable and usable by the general public on the web."
+      },
+      {
+        domain: "Data Discovery",
+        question: "What is the difference between geographic coordinates and projected coordinates?",
+        options: [
+          "Geographic coordinates use meters, projected coordinates use degrees",
+          "They are identical, just expressed differently",
+          "Projected coordinates are only used for raster data",
+          "Geographic coordinates use latitude and longitude in degrees, projected coordinates use linear units like meters"
+        ],
+        answer: 3,
+        explanation: "Geographic coordinates (latitude/longitude) use angular units like degrees. Projected coordinates have been mathematically flattened onto a 2D surface and use linear units like meters — as in Lambert 93."
+      },
+      {
+        domain: "Processing & Analysis",
+        question: "What does 'editing features' in ArcGIS Pro allow you to do?",
+        options: [
+          "Create, modify or delete the geometry and attributes of features",
+          "Change the coordinate system of the layer",
+          "Export the map to ArcGIS Online automatically",
+          "Modify the basemap appearance"
+        ],
+        answer: 0,
+        explanation: "Editing features in ArcGIS Pro lets you create new features, reshape or move existing geometries, and update attribute values. It requires the layer to be in an editable state with appropriate permissions."
+      },
+      {
+        domain: "Content Management & Sharing",
+        question: "In ArcGIS Online, what is a 'group' used for?",
+        options: [
+          "To merge multiple feature classes into one dataset",
+          "To run batch geoprocessing on multiple layers",
+          "To share and organize content with specific members of an organization",
+          "To perform spatial analysis on shared content"
+        ],
+        answer: 2,
+        explanation: "Groups in ArcGIS Online allow you to share and organize content with specific users — within or outside your organization. Members of a group can access all content shared to that group."
+      }
+    ];
 
-let current = 0;
-let score = 0;
-let answered = false;
+    let current = 0;
+    let score = 0;
+    let answered = false;
 
-function loadQuestion() {
-  const q = questions[current];
-  answered = false;
+    function loadQuestion() {
+      const q = questions[current];
+      answered = false;
 
-  document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
-  document.getElementById('question-text').textContent = q.question;
+      document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
+      document.getElementById('question-text').textContent = q.question;
 
-  const letters = ['A', 'B', 'C', 'D'];
-  const list = document.getElementById('options-list');
-  list.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      const list = document.getElementById('options-list');
+      list.innerHTML = '';
 
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'option';
-    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
-    btn.onclick = () => selectAnswer(i);
-    list.appendChild(btn);
-  });
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+        btn.onclick = () => selectAnswer(i);
+        list.appendChild(btn);
+      });
 
-  const expl = document.getElementById('explanation');
-  expl.textContent = '';
-  expl.classList.remove('visible');
+      const expl = document.getElementById('explanation');
+      expl.textContent = '';
+      expl.classList.remove('visible');
 
-  const next = document.getElementById('btn-next');
-  next.classList.remove('visible');
-  next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
+      const next = document.getElementById('btn-next');
+      next.classList.remove('visible');
+      next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
 
-  const pct = ((current + 1) / questions.length) * 100;
-  document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
-  document.getElementById('progress-fill').style.width = pct + '%';
-}
+      const pct = ((current + 1) / questions.length) * 100;
+      document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
+      document.getElementById('progress-fill').style.width = pct + '%';
+    }
 
-function selectAnswer(index) {
-  if (answered) return;
-  answered = true;
+    function selectAnswer(index) {
+      if (answered) return;
+      answered = true;
 
-  const q = questions[current];
-  const options = document.querySelectorAll('.option');
+      const q = questions[current];
+      const options = document.querySelectorAll('.option');
 
-  options.forEach(btn => btn.disabled = true);
-  options[q.answer].classList.add('correct');
+      options.forEach(btn => btn.disabled = true);
+      options[q.answer].classList.add('correct');
 
-  if (index === q.answer) {
-    score++;
-  } else {
-    options[index].classList.add('wrong');
-  }
+      if (index === q.answer) {
+        score++;
+      } else {
+        options[index].classList.add('wrong');
+      }
 
-  const expl = document.getElementById('explanation');
-  expl.textContent = q.explanation;
-  expl.classList.add('visible');
+      const expl = document.getElementById('explanation');
+      expl.textContent = q.explanation;
+      expl.classList.add('visible');
 
-  document.getElementById('btn-next').classList.add('visible');
-}
+      document.getElementById('btn-next').classList.add('visible');
+    }
 
-function nextQuestion() {
-  current++;
-  if (current < questions.length) {
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById('quiz-screen').style.display = 'none';
+      const rs = document.getElementById('result-screen');
+      rs.style.display = 'block';
+
+      const pct = Math.round((score / questions.length) * 100);
+      document.getElementById('result-score').textContent = `${score}/${questions.length}`;
+      document.getElementById('result-sub').textContent =
+        pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
+          pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
+            `${pct}% — À retravailler avant l'exam.`;
+    }
+
+    function restart() {
+      current = 0;
+      score = 0;
+      document.getElementById('result-screen').style.display = 'none';
+      document.getElementById('quiz-screen').style.display = 'block';
+      loadQuestion();
+    }
+
     loadQuestion();
-  } else {
-    showResult();
-  }
-}
-
-function showResult() {
-  document.getElementById('quiz-screen').style.display = 'none';
-  const rs = document.getElementById('result-screen');
-  rs.style.display = 'block';
-
-  const pct = Math.round((score / questions.length) * 100);
-  document.getElementById('result-score').textContent = `${score}/${questions.length}`;
-  document.getElementById('result-sub').textContent =
-    pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
-    pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
-    `${pct}% — À retravailler avant l'exam.`;
-}
-
-function restart() {
-  current = 0;
-  score = 0;
-  document.getElementById('result-screen').style.display = 'none';
-  document.getElementById('quiz-screen').style.display = 'block';
-  loadQuestion();
-}
-
-loadQuestion();
-</script>
+  </script>
 </body>
+
 </html>
