@@ -236,8 +236,8 @@
   <a class="back" href="../">← Hub</a>
   <div class="header-title">GIS Foundation — Série 2</div>
   <div class="progress-wrap">
-    <span id="progress-text">1 / 3</span>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:33.33%"></div></div>
+    <span id="progress-text">1 / 22</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:4.5%"></div></div>
   </div>
 </header>
 
@@ -264,39 +264,267 @@
 const questions = [
   {
     domain: "Data Discovery",
-    question: "Which of the following is NOT a vector data format?",
+    question: "What does DMS stand for when describing coordinate units in GIS?",
     options: [
-      "GeoJSON",
-      "Shapefile",
-      "GeoTIFF",
-      "File Geodatabase feature class"
+      "Digital Map System",
+      "Data Mapping Standard",
+      "Dynamic Measure Scale",
+      "Degrees Minutes Seconds"
+    ],
+    answer: 3,
+    explanation: "DMS stands for Degrees Minutes Seconds — a traditional way to express geographic coordinates. For example, Toulouse is 43°36'17\" N, 1°26'39\" E in DMS, versus 43.6047°N, 1.4442°E in Decimal Degrees (DD)."
+  },
+  {
+    domain: "Data Discovery",
+    question: "What is the difference between DD and DMS coordinate formats?",
+    options: [
+      "DD uses Degrees Minutes Seconds, DMS uses decimal numbers",
+      "They represent different coordinate systems — DD is global, DMS is local",
+      "DD expresses coordinates as decimal numbers, DMS splits them into degrees, minutes and seconds",
+      "DD is for raster data, DMS is for vector data"
     ],
     answer: 2,
-    explanation: "GeoTIFF is a raster format — it stores data as a grid of pixels with geographic coordinates embedded. GeoJSON, Shapefile and File Geodatabase feature classes are all vector formats."
+    explanation: "DD (Decimal Degrees) expresses coordinates as a single decimal number like 43.6047°. DMS splits the same coordinate into degrees, minutes and seconds like 43°36'17\". Both describe the same location — just different formats."
+  },
+  {
+    domain: "Data Discovery",
+    question: "A raster dataset stores geographic information as:",
+    options: [
+      "A grid of cells each holding a single value",
+      "Points, lines and polygons with attribute tables",
+      "A collection of feature classes in a geodatabase",
+      "A set of coordinates linked to a metadata file"
+    ],
+    answer: 0,
+    explanation: "Raster data is a grid (like a spreadsheet or image) where each cell holds one value — an elevation, temperature, color, etc. Vector data uses points, lines and polygons. Do not confuse the two."
+  },
+  {
+    domain: "Data Discovery",
+    question: "Which of the following best describes metadata in GIS?",
+    options: [
+      "The color scheme applied to a layer",
+      "The coordinate system used to display a map on screen",
+      "Data that describes other data — such as source, date, author and coordinate system",
+      "The visual symbology rules for rendering a layer"
+    ],
+    answer: 2,
+    explanation: "Metadata describes the data itself: who created it, when, what coordinate system it uses, its accuracy, etc. Symbology (colors, styles) is NOT metadata — it describes how data is displayed, not what the data is."
+  },
+  {
+    domain: "Data Discovery",
+    question: "Which coordinate system is the global standard used by GPS and as the basis for Web Mercator?",
+    options: [
+      "Lambert 93",
+      "RGF93",
+      "WGS84",
+      "Web Mercator"
+    ],
+    answer: 2,
+    explanation: "WGS84 is the global datum used by GPS devices worldwide. Web Mercator uses WGS84 as its datum but is a projected coordinate system — they are different. Lambert 93 and RGF93 are specific to France."
+  },
+  {
+    domain: "Data Discovery",
+    question: "What is the correct way to add data to a map from ArcGIS Online?",
+    options: [
+      "Searching the Living Atlas or ArcGIS Online portal and adding the layer directly to the map",
+      "Exporting it to a shapefile first then importing it",
+      "Converting it to a File Geodatabase before adding it",
+      "Running a geoprocessing tool to import online content"
+    ],
+    answer: 0,
+    explanation: "In ArcGIS Online and ArcGIS Pro, you can search the Living Atlas or the portal directly and add layers to your map without any conversion. This is one of the key workflows tested in the exam."
   },
   {
     domain: "Mapping & Visualization",
-    question: "Which projection is officially used for web mapping applications like Google Maps and ArcGIS Online?",
+    question: "What is a basemap in ArcGIS?",
     options: [
-      "Lambert Conformal Conic",
-      "WGS84",
-      "Web Mercator",
-      "Albers Equal Area"
+      "A background reference map providing geographic context beneath operational data layers",
+      "The first operational layer added to a project",
+      "A map that has been validated and exported to PDF",
+      "A raster layer containing elevation data"
+    ],
+    answer: 0,
+    explanation: "A basemap is a background reference (streets, satellite imagery, topography) that gives geographic context. It is NOT the first layer you add — it is a specific background type. Your data layers sit on top of it."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "A map at scale 1:5 000 compared to a map at 1:500 000 is:",
+    options: [
+      "A smaller scale map showing more territory with less detail",
+      "An identical scale expressed with different units",
+      "A larger scale map showing less territory but more detail",
+      "A smaller scale map because the number 5 000 is smaller"
     ],
     answer: 2,
-    explanation: "Web Mercator (WKID 3857) is the standard projection for web mapping. WGS84 is the datum it is based on — they are different things. Web Mercator preserves shapes locally but distorts area near the poles."
+    explanation: "1:5,000 is a LARGER scale than 1:500,000 because as a fraction, 1/5,000 is mathematically bigger than 1/500,000. Large scale = small area in high detail (like a neighbourhood). Small scale = large area, less detail (like a country)."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "In ArcGIS Pro, what is the Layout view used for?",
+    options: [
+      "Running geoprocessing tools on multiple layers",
+      "Editing the geometry of individual features",
+      "Designing the full page composition for printing — title, legend, scale bar, north arrow",
+      "Browsing and connecting to data sources"
+    ],
+    answer: 2,
+    explanation: "The Layout view is where you assemble the final map for printing or export. It contains a map frame (the geographic view) plus other elements like title, legend, north arrow and scale bar."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "What is the difference between a Layout and a Map Frame in ArcGIS Pro?",
+    options: [
+      "A map frame is the full printed page, a layout is the raw geographic view",
+      "They are two names for the same thing",
+      "A layout is the full page design, a map frame is the geographic window inside it",
+      "A layout only works with raster layers"
+    ],
+    answer: 2,
+    explanation: "The Layout is the full page — like a poster. The Map Frame is the geographic window embedded inside that layout. Think of a poster (layout) with a map photo inside it (map frame)."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "Which element must always appear on a printed or published map?",
+    options: [
+      "The file path to the source data",
+      "The attribute table of each layer",
+      "Title, legend, scale bar, north arrow and data source",
+      "The coordinate table of each feature"
+    ],
+    answer: 2,
+    explanation: "The standard required elements for a published map are: title, legend, scale bar, north arrow and data source/credits. The attribute table and file paths are software elements — they never appear on a printed map."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "You are mapping road types: highway, local road, bike path. Which symbology type is correct?",
+    options: [
+      "Graduated colors",
+      "Proportional symbols",
+      "Unique values",
+      "Heat map"
+    ],
+    answer: 2,
+    explanation: "Unique values assigns a distinct color or symbol per category. Road types are qualitative categories with no numeric order — one type is not 'more' than another. Graduated colors would imply a numeric ranking."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "Which color scheme is best for mapping temperature anomalies above and below the annual average?",
+    options: [
+      "Diverging — two opposite colors from a neutral center",
+      "Sequential — one color that gets progressively darker",
+      "Qualitative — distinct colors per category",
+      "Classified — fixed color bands with equal intervals"
+    ],
+    answer: 0,
+    explanation: "Diverging color schemes have a neutral midpoint (white or light gray) with contrasting colors in both directions — perfect for data that goes above AND below a reference value like an average or zero."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "For showing population density from low to high across regions, which color scheme is most appropriate?",
+    options: [
+      "Diverging — two colors from a center point",
+      "Qualitative — distinct unordered colors",
+      "Sequential — one color progressing from light to dark",
+      "Classified with standard deviation breaks"
+    ],
+    answer: 2,
+    explanation: "Sequential color schemes go in one direction from low to high — ideal for data without a meaningful midpoint. Population density only goes one way (more or less dense), so sequential is correct. Diverging implies above/below a reference value."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "Which classification method puts the same number of features in each class regardless of value ranges?",
+    options: [
+      "Natural breaks",
+      "Standard deviation",
+      "Quantile",
+      "Equal interval"
+    ],
+    answer: 2,
+    explanation: "Quantile guarantees an equal count of features per class. Equal interval creates classes of equal value range — which can result in empty classes if data is skewed. Natural breaks finds natural groupings in the data."
+  },
+  {
+    domain: "Mapping & Visualization",
+    question: "Which projection is used by Google Maps and ArcGIS Online for web map display?",
+    options: [
+      "WGS84",
+      "Lambert Conformal Conic",
+      "Albers Equal Area",
+      "Web Mercator"
+    ],
+    answer: 3,
+    explanation: "Web Mercator (EPSG:3857) is the standard projection for web mapping. WGS84 is the datum Web Mercator is based on — they are not the same. Web Mercator preserves local shapes but significantly distorts area near the poles."
   },
   {
     domain: "Processing & Analysis",
-    question: "You want to combine two separate road shapefiles — one for Paris, one for Lyon — into a single layer. Which tool do you use?",
+    question: "Which tool selects features based on their geographic position relative to another layer?",
     options: [
-      "Intersect",
-      "Union",
+      "Select by Attribute",
+      "Select by Location",
       "Dissolve",
-      "Merge"
+      "Spatial Join"
+    ],
+    answer: 1,
+    explanation: "Select by Location finds features based on spatial relationships — within, intersects, contains, etc. Select by Attribute filters using field values in the attribute table. They are complementary tools."
+  },
+  {
+    domain: "Processing & Analysis",
+    question: "You clip a roads layer using a city boundary polygon. Which attributes does the result contain?",
+    options: [
+      "Attributes from the city boundary polygon only",
+      "Attributes from both the roads and the city boundary",
+      "No attributes — Clip removes all attribute data",
+      "Attributes from the roads layer only"
     ],
     answer: 3,
-    explanation: "Merge stacks multiple datasets of the same type into one single output layer. Union combines layers spatially, Dissolve merges features within a layer, and Intersect keeps only overlapping areas."
+    explanation: "Clip uses the boundary layer as a 'cookie cutter' — it only cuts the shape. The cutting layer disappears from the result. Only the input layer (roads) keeps its attributes. This is the key difference from Intersect, which keeps attributes from both layers."
+  },
+  {
+    domain: "Processing & Analysis",
+    question: "What is a Spatial Join used for?",
+    options: [
+      "Merging two tables based on a shared field value",
+      "Transferring attributes from one layer to another based on geographic position",
+      "Dissolving features that share the same attribute value",
+      "Clipping a layer to the boundary of another"
+    ],
+    answer: 1,
+    explanation: "Spatial Join transfers attribute data from one layer to another based on spatial relationships — not shared field values (that is a regular attribute join). Example: transferring region names to communes based on which region each commune falls inside."
+  },
+  {
+    domain: "Processing & Analysis",
+    question: "You want to find all hospitals within 1km of a flood zone. What is the correct workflow?",
+    options: [
+      "Dissolve flood zones → Merge with hospitals",
+      "Clip hospitals with flood zones directly",
+      "Buffer flood zones by 1km → Intersect result with hospitals layer",
+      "Select by Attribute on hospitals → Union with flood zones"
+    ],
+    answer: 2,
+    explanation: "Step 1: Buffer the flood zones by 1km to create a proximity zone. Step 2: Intersect that zone with the hospitals layer to keep only hospitals that fall within the buffer. This Buffer → Intersect pattern is the standard proximity workflow."
+  },
+  {
+    domain: "Content Management & Sharing",
+    question: "In ArcGIS Online, how can you organize and share content with a specific team?",
+    options: [
+      "By converting all layers to shapefile and emailing them",
+      "By creating a Group and sharing items to that group",
+      "By compressing all content into a single geodatabase",
+      "By running topology validation before sharing"
+    ],
+    answer: 1,
+    explanation: "Groups in ArcGIS Online let you share and organize content with specific users — inside or outside your organization. Members of the group can access all content shared to it. It is the standard collaboration mechanism."
+  },
+  {
+    domain: "Content Management & Sharing",
+    question: "Before sharing a map from ArcGIS Pro to ArcGIS Online, what is the essential step?",
+    options: [
+      "Convert all layers to raster format",
+      "Reproject all layers to WGS84",
+      "Validate the map to confirm all layers are accessible and the map is ready to share",
+      "Install Python and run a sharing script"
+    ],
+    answer: 2,
+    explanation: "Before sharing from ArcGIS Pro to ArcGIS Online, you must validate the map. This checks that all data sources are accessible, layer names are correct and the map will display properly once published."
   }
 ];
 
