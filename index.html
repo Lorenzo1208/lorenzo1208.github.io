@@ -149,6 +149,11 @@
       color: var(--accent);
     }
 
+    .tag.fiche {
+      border-color: #60c8f0;
+      color: #60c8f0;
+    }
+
     .arrow {
       font-size: 1rem;
       transition: transform 0.15s, color 0.15s;
@@ -158,6 +163,10 @@
     .quiz-card.empty {
       opacity: 0.3;
       pointer-events: none;
+    }
+
+    .quiz-card.cours:hover .arrow {
+      color: #60c8f0;
     }
 
     footer {
@@ -179,6 +188,24 @@
     <div class="tagline">Révisions & certifications</div>
   </header>
   <main>
+    <div class="section-label">Cours disponibles</div>
+    <div class="quiz-grid" style="margin-bottom:2.5rem;">
+
+      <a class="quiz-card cours" href="./cours/">
+        <div class="card-left">
+          <span class="card-index">01</span>
+          <div>
+            <div class="card-title">GIS Foundation — Fiche de r&#233;vision</div>
+            <div class="card-meta">4 domaines · Data, Mapping, Processing, Sharing</div>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="tag fiche">Fiche</span>
+          <span class="arrow">&#x2192;</span>
+        </div>
+      </a>
+
+    </div>
     <div class="section-label">Quiz disponibles</div>
     <div class="quiz-grid">
 
@@ -186,7 +213,7 @@
         <div class="card-left">
           <span class="card-index">01</span>
           <div>
-            <div class="card-title">GIS Foundation - EGFF 2024</div>
+            <div class="card-title">GIS Foundation - Série 1</div>
             <div class="card-meta">Esri · 4 domaines · Pearson VUE</div>
           </div>
         </div>
@@ -240,7 +267,7 @@
 
     </div>
   </main>
-  <footer>Tous les quiz sont indépendants - un dossier par thème.</footer>
+  <footer>Créé par Lorenzo Gurgoglione 2026.</footer>
 </body>
 
 </html>
