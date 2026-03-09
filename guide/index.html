@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EGFF 2024 - Study Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0d0d0d;
+            --surface: #161616;
+            --surface2: #1c1c1c;
+            --border: #2a2a2a;
+            --accent: #c8f060;
+            --accent-dim: rgba(200, 240, 96, 0.08);
+            --blue: #60c8f0;
+            --blue-dim: rgba(96, 200, 240, 0.08);
+            --orange: #f0a060;
+            --orange-dim: rgba(240, 160, 96, 0.08);
+            --red: #ff5f5f;
+            --red-dim: rgba(255, 95, 95, 0.08);
+            --text: #f0f0f0;
+            --muted: #666;
+            --muted2: #444;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            min-height: 100vh;
+            padding: 3rem 2rem 6rem;
+            line-height: 1.7;
+        }
+
+        /* ── HEADER ─────────────────────────────────────────── */
+        header {
+            max-width: 780px;
+            margin: 0 auto 4rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .back {
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.15s;
+        }
+
+        .back:hover {
+            color: var(--accent);
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header-title span {
+            color: var(--accent);
+        }
+
+        .header-sub {
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.3rem;
+        }
+
+        /* ── LAYOUT ─────────────────────────────────────────── */
+        main {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        section {
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── HERO BANNER ──────────────────────────── */
+        .hero {
+            background: var(--accent-dim);
+            border: 1px solid rgba(200, 240, 96, 0.2);
+            padding: 2rem 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+        }
+
+        .hero-lead {
+            font-size: 0.88rem;
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        .hero-lead strong {
+            color: var(--accent);
+        }
+
+        .stat-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.8rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+        }
+
+        /* ── DOMAIN TABLE ──────────────────────── */
+        .domain-grid {
+            display: grid;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .domain-row {
+            background: var(--surface);
+            padding: 1.2rem 1.6rem;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .domain-row:first-child {
+            border-top: none;
+        }
+
+        .domain-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .domain-meta {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+        }
+
+        .domain-weight {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            min-width: 3.5rem;
+            text-align: right;
+        }
+
+        .weight-high {
+            color: var(--accent);
+        }
+
+        .weight-mid {
+            color: var(--blue);
+        }
+
+        .weight-low {
+            color: var(--orange);
+        }
+
+        .weight-min {
+            color: var(--muted);
+        }
+
+        .domain-bar-wrap {
+            width: 80px;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .domain-bar {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* ── CALLOUT BOXES ──────────────────────── */
+        .callout {
+            padding: 1.2rem 1.6rem;
+            border-left: 3px solid;
+            margin-bottom: 1.2rem;
+            font-size: 0.82rem;
+            line-height: 1.7;
+        }
+
+        .callout.warning {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .callout.info {
+            border-color: var(--blue);
+            background: var(--blue-dim);
+        }
+
+        .callout.danger {
+            border-color: var(--red);
+            background: var(--red-dim);
+        }
+
+        .callout strong {
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .callout.warning strong {
+            color: var(--accent);
+        }
+
+        .callout.info strong {
+            color: var(--blue);
+        }
+
+        .callout.danger strong {
+            color: var(--red);
+        }
+
+        /* ── RESOURCES ──────────────────────────── */
+        .resource-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .resource-item {
+            background: var(--surface);
+            padding: 1.1rem 1.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--text);
+            transition: background 0.12s;
+        }
+
+        .resource-item:hover {
+            background: var(--surface2);
+        }
+
+        .resource-title {
+            font-size: 0.85rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+        }
+
+        .resource-sub {
+            font-size: 0.68rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+        }
+
+        .resource-tag {
+            font-size: 0.58rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.2rem 0.5rem;
+            border: 1px solid;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .tag-essential {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .tag-high {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .tag-supp {
+            border-color: var(--muted2);
+            color: var(--muted);
+        }
+
+        /* ── SCHEDULE ──────────────────────────── */
+        .day-block {
+            margin-bottom: 2.5rem;
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .day-badge {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--border);
+            color: var(--muted);
+        }
+
+        .day-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .day-hours {
+            font-size: 0.68rem;
+            color: var(--accent);
+            margin-left: auto;
+        }
+
+        .schedule-block {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .schedule-item {
+            background: var(--surface);
+            padding: 1rem 1.6rem;
+            display: grid;
+            grid-template-columns: 5rem 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .schedule-time {
+            font-size: 0.68rem;
+            color: var(--muted);
+            padding-top: 0.1rem;
+            white-space: nowrap;
+        }
+
+        .schedule-content {}
+
+        .schedule-title {
+            font-size: 0.85rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .schedule-desc {
+            font-size: 0.72rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .schedule-item.break {
+            opacity: 0.5;
+        }
+
+        /* ── CONCEPTS LIST ──────────────────────── */
+        .concept-group {
+            margin-bottom: 2rem;
+        }
+
+        .concept-group-title {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            margin-bottom: 0.8rem;
+            padding-left: 0.5rem;
+            border-left: 2px solid var(--border);
+        }
+
+        .concept-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .concept-list li {
+            background: var(--surface);
+            padding: 0.7rem 1.2rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .concept-list li::before {
+            content: '→';
+            color: var(--muted);
+            flex-shrink: 0;
+            font-size: 0.72rem;
+            margin-top: 0.08rem;
+        }
+
+        .concept-list li.key::before {
+            content: '★';
+            color: var(--accent);
+        }
+
+        .concept-list li.key {
+            color: var(--text);
+        }
+
+        /* ── STRATEGY ──────────────────────────── */
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .strategy-card {
+            background: var(--surface);
+            padding: 1.4rem 1.6rem;
+        }
+
+        .strategy-card img {
+            display: none;
+        }
+
+        .strategy-num {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+            color: var(--border);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .strategy-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.88rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .strategy-body {
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        /* ── TIPS (bottom summary) ──────────────── */
+        .tips-section {
+            border-top: 2px solid var(--accent);
+            padding-top: 3rem;
+            margin-top: 4rem;
+        }
+
+        .tips-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .tips-icon {
+            font-size: 1.4rem;
+        }
+
+        .tips-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+
+        .tips-title span {
+            color: var(--accent);
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tip-card {
+            background: var(--surface);
+            padding: 1.6rem;
+        }
+
+        .tip-card-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .tip-card-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 0.6rem;
+            color: var(--accent);
+        }
+
+        .tip-card-body {
+            font-size: 0.72rem;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .tips-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+        }
+
+        .tips-check {
+            background: var(--surface);
+            padding: 1rem 1.6rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .check-mark {
+            font-size: 0.72rem;
+            color: var(--accent);
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+            font-weight: bold;
+        }
+
+        .tips-danger {
+            background: var(--red-dim);
+            border: 1px solid rgba(255, 95, 95, 0.25);
+            padding: 1.6rem;
+            margin-top: 2rem;
+        }
+
+        .tips-danger-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: var(--red);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .tips-danger-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .tips-danger-list li {
+            font-size: 0.78rem;
+            color: var(--text);
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .tips-danger-list li::before {
+            content: '!';
+            color: var(--red);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* ── FOOTER ─────────────────────────────── */
+        footer {
+            max-width: 780px;
+            margin: 4rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.62rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* ── RESPONSIVE ─────────────────────────── */
+        @media (max-width: 640px) {
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .domain-row {
+                grid-template-columns: 1fr auto;
+            }
+
+            .domain-bar-wrap {
+                display: none;
+            }
+
+            .stat-row {
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a class="back" href="../">← Hub</a>
+        <div class="header-right">
+            <div class="header-title">Study Guide<span>.</span></div>
+            <div class="header-sub">EGFF 2024 · Esri GIS Fundamentals Foundation</div>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ── HERO ─────────────────────────────────────── -->
+        <div class="hero">
+            <div class="hero-title">Pass the EGFF 2024 in three days flat.</div>
+            <p class="hero-lead">
+                <strong>You can pass this exam with 10.5 focused hours.</strong> The Esri GIS Fundamentals Foundation
+                2024 is rated
+                easy-to-moderate for anyone with GIS theory - but it has one critical trap:
+                <strong>you must pass all four domains individually</strong>, not just hit an overall score.
+                Your strong theoretical background is a major advantage since the exam tests conceptual understanding
+                ("which tool?") rather than button-click memorization.
+            </p>
+            <div class="stat-row">
+                <div class="stat">
+                    <span class="stat-value">10.5</span>
+                    <span class="stat-label">Total hours</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">75</span>
+                    <span class="stat-label">MCQs</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">90</span>
+                    <span class="stat-label">Minutes</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">4</span>
+                    <span class="stat-label">Domains to pass</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── DOMAINS ───────────────────────────────────── -->
+        <section>
+            <div class="section-label">The four domains</div>
+
+            <div class="domain-grid">
+                <div class="domain-row">
+                    <div>
+                        <div class="domain-name">Data Discovery</div>
+                        <div class="domain-meta">Add data · data types · coordinate systems · GIS concepts · Living
+                            Atlas · map navigation</div>
+                    </div>
+                    <div class="domain-weight weight-high">35%</div>
+                    <div class="domain-bar-wrap">
+                        <div class="domain-bar" style="width:100%;background:var(--accent)"></div>
+                    </div>
+                </div>
+                <div class="domain-row">
+                    <div>
+                        <div class="domain-name">Mapping &amp; Visualization</div>
+                        <div class="domain-meta">Basemaps · symbology &amp; styling · labeling · layer properties in Pro
+                            and Online</div>
+                    </div>
+                    <div class="domain-weight weight-mid">25%</div>
+                    <div class="domain-bar-wrap">
+                        <div class="domain-bar" style="width:71%;background:var(--blue)"></div>
+                    </div>
+                </div>
+                <div class="domain-row">
+                    <div>
+                        <div class="domain-name">Processing &amp; Analysis</div>
+                        <div class="domain-meta">Attribute tables · geoprocessing tools · editing features in ArcGIS Pro
+                        </div>
+                    </div>
+                    <div class="domain-weight weight-low">22%</div>
+                    <div class="domain-bar-wrap">
+                        <div class="domain-bar" style="width:63%;background:var(--orange)"></div>
+                    </div>
+                </div>
+                <div class="domain-row">
+                    <div>
+                        <div class="domain-name">Content Management &amp; Sharing</div>
+                        <div class="domain-meta">Validate maps · organize ArcGIS Online content · sharing levels ·
+                            portal elements</div>
+                    </div>
+                    <div class="domain-weight weight-min">18%</div>
+                    <div class="domain-bar-wrap">
+                        <div class="domain-bar" style="width:51%;background:var(--muted)"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout danger" style="margin-top:1.2rem;">
+                <strong>⚠ Domain trap</strong>
+                A 15-year GIS veteran publicly failed a related Esri certification because
+                <em>"most of the questions were webGIS / ArcGIS portal / sharing and caring stuff."</em>
+                You must pass ALL four domains individually. A perfect score on three cannot compensate for failing the
+                fourth.
+            </div>
+
+            <div class="callout warning" style="margin-top:0;">
+                <strong>🚫 Not on the exam - don't waste time</strong>
+                GPS · raster data processing · Python / ModelBuilder · configurable apps (StoryMaps, Dashboards,
+                Experience Builder) · file format identification · mobile apps (Field Maps, Survey123) · 3D data.
+            </div>
+        </section>
+
+        <!-- ── RESOURCES ─────────────────────────────────── -->
+        <section>
+            <div class="section-label">Free resource toolkit</div>
+
+            <div class="resource-list">
+                <a class="resource-item"
+                    href="https://community.esri.com/t5/esri-technical-certification-exams/egff-2024-eig/ba-p/1585612"
+                    target="_blank">
+                    <div>
+                        <div class="resource-title">Exam Information Guide (EIG)</div>
+                        <div class="resource-sub">Your blueprint and gap-analysis checklist - use it as a daily to-do
+                            list</div>
+                    </div>
+                    <span class="resource-tag tag-essential">Essential</span>
+                </a>
+                <a class="resource-item"
+                    href="https://www.esri.com/training/catalog/654ac5bfaeac45034b3470b1/esri-gis-fundamentals-foundation-certification-2024/"
+                    target="_blank">
+                    <div>
+                        <div class="resource-title">Esri Learning Plan (free)</div>
+                        <div class="resource-sub">Curated courses mapped to all four exam domains</div>
+                    </div>
+                    <span class="resource-tag tag-essential">Essential</span>
+                </a>
+                <a class="resource-item"
+                    href="https://quizlet.com/925978360/gis-fundamentals-foundation-certification-2024-flash-cards/"
+                    target="_blank">
+                    <div>
+                        <div class="resource-title">Quizlet Flashcard Set - 107 terms</div>
+                        <div class="resource-sub">Community-created, covers all domains with practice Q&A</div>
+                    </div>
+                    <span class="resource-tag tag-essential">Essential</span>
+                </a>
+                <a class="resource-item"
+                    href="https://www.udemy.com/course/arcgis-pro-foundation-2025-complete-practice-test-prep/?couponCode=FORMASIG"
+                    target="_blank">
+                    <div>
+                        <div class="resource-title">FormaSIG Practice Test (Udemy)</div>
+                        <div class="resource-sub">Use coupon code FORMASIG - significant overlap with EGFF content</div>
+                    </div>
+                    <span class="resource-tag tag-essential">Essential</span>
+                </a>
+                <a class="resource-item"
+                    href="https://pro.arcgis.com/en/pro-app/latest/get-started/pro-quickstart-tutorials.htm"
+                    target="_blank">
+                    <div>
+                        <div class="resource-title">ArcGIS Pro Quick-Start Tutorials</div>
+                        <div class="resource-sub">20 tutorials with data and summary videos, 15–60 min each</div>
+                    </div>
+                    <span class="resource-tag tag-high">High value</span>
+                </a>
+                <a class="resource-item" href="https://doc.arcgis.com/en/arcgis-online/" target="_blank">
+                    <div>
+                        <div class="resource-title">ArcGIS Online Documentation</div>
+                        <div class="resource-sub">Sharing workflows, organizations, content management</div>
+                    </div>
+                    <span class="resource-tag tag-high">High value</span>
+                </a>
+                <a class="resource-item"
+                    href="https://learning-plans-eaglegistraining.hub.arcgis.com/pages/gis-fundamentals-foundation-2024"
+                    target="_blank">
+                    <div>
+                        <div class="resource-title">Eagle GIS Training Hub</div>
+                        <div class="resource-sub">Community learning plan with aggregated resources</div>
+                    </div>
+                    <span class="resource-tag tag-supp">Supplementary</span>
+                </a>
+                <a class="resource-item" href="https://learn.arcgis.com/en/gallery/" target="_blank">
+                    <div>
+                        <div class="resource-title">Learn ArcGIS Tutorials</div>
+                        <div class="resource-sub">Free tutorials, no login required for most</div>
+                    </div>
+                    <span class="resource-tag tag-supp">Supplementary</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- ── TOP 30 CONCEPTS ───────────────────────────── -->
+        <section>
+            <div class="section-label">30 concepts most likely on your exam</div>
+
+            <div class="concept-group">
+                <div class="concept-group-title">Data Discovery - 35% - memorize these first</div>
+                <ul class="concept-list">
+                    <li class="key">Vector vs. raster data - points/lines/polygons vs. grid cells; when to use each</li>
+                    <li class="key">GCS vs. PCS - angular (lat/lon) vs. linear (meters/feet); datum (WGS84, NAD83);
+                        ellipsoid</li>
+                    <li class="key">Decimal degrees vs. DMS vs. UTM - coordinate unit formats</li>
+                    <li>Feature class vs. shapefile vs. geodatabase - Esri's data storage hierarchy</li>
+                    <li>Living Atlas - Esri's curated global data; how to discover and add it</li>
+                    <li>Web GIS - benefits, architecture, cloud-based access</li>
+                    <li>Adding data - from geodatabases, CSV/Excel (with X/Y), portals, geocoding</li>
+                    <li>Explore tool, bookmarks, map navigation in ArcGIS Pro</li>
+                </ul>
+            </div>
+
+            <div class="concept-group">
+                <div class="concept-group-title">Mapping &amp; Visualization - 25%</div>
+                <ul class="concept-list">
+                    <li class="key">Symbology types - single symbol, unique values, graduated colors, graduated symbols,
+                        proportional symbols, heat maps, dot density</li>
+                    <li>Smart Mapping - ArcGIS Online's automatic symbology suggestions</li>
+                    <li>Labeling - how to generate labels, label placement properties</li>
+                    <li>Basemaps - how to change them in Pro and Online</li>
+                    <li>Layer properties - visibility range, transparency, drawing order in Contents pane</li>
+                    <li>Map scale - large vs. small, reference scale</li>
+                </ul>
+            </div>
+
+            <div class="concept-group">
+                <div class="concept-group-title">Processing &amp; Analysis - 22%</div>
+                <ul class="concept-list">
+                    <li class="key">Buffer, Clip, Dissolve, Intersect - know what each does conceptually</li>
+                    <li>Select by Attributes vs. Select by Location - query types</li>
+                    <li>Attribute tables - viewing, sorting, selecting, field calculations, joins</li>
+                    <li>Editing in ArcGIS Pro - feature templates, Edit tab, creating/modifying features</li>
+                    <li>Geoprocessing - what it is, where tools live in ArcGIS Pro</li>
+                </ul>
+            </div>
+
+            <div class="concept-group">
+                <div class="concept-group-title">Content Management &amp; Sharing - 18% - do NOT skip this</div>
+                <ul class="concept-list">
+                    <li class="key">Sharing levels - Private, Group, Organization, Everyone (Public)</li>
+                    <li class="key">Validate map before sharing from ArcGIS Pro - the analyze step</li>
+                    <li class="key">ArcGIS Online organization structure - members, roles, groups, items, folders</li>
+                    <li>Web map vs. web layer - what each is, when to create each</li>
+                    <li>Content page - how to organize items, create groups, manage content</li>
+                    <li>Pop-ups - configuration in ArcGIS Online</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ── STUDY PLAN ────────────────────────────────── -->
+        <section>
+            <div class="section-label">Hour-by-hour golden path - 3 days</div>
+
+            <!-- Monday -->
+            <div class="day-block">
+                <div class="day-header">
+                    <span class="day-badge">Day 1</span>
+                    <span class="day-title">Monday evening - Foundation &amp; gap analysis</span>
+                    <span class="day-hours">1.5 hours</span>
+                </div>
+                <div class="schedule-block">
+                    <div class="schedule-item">
+                        <span class="schedule-time">0:00–0:20</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Read the EIG cover to cover</div>
+                            <div class="schedule-desc">Print or screenshot the Skills Measured table. Mark each skill: ✅
+                                confident, ⚠ shaky, ❌ don't know. This is your personal gap map.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">0:20–0:50</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Quizlet flashcards - first pass</div>
+                            <div class="schedule-desc">107-term set in "Learn" mode. Don't memorize yet - identify what
+                                you know vs. what's new. Star/flag unfamiliar terms.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">0:50–1:20</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Data Discovery deep dive</div>
+                            <div class="schedule-desc">Read ArcGIS Pro help on coordinate systems, adding data, data
+                                types. Focus on Esri-specific terminology for concepts you already know theoretically.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">1:20–1:30</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Build cheat sheet v1</div>
+                            <div class="schedule-desc">Write down the 10 concepts you're least confident about. This
+                                becomes your Tuesday priority list.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="day-block">
+                <div class="day-header">
+                    <span class="day-badge">Day 2</span>
+                    <span class="day-title">Tuesday - Deep study with active recall</span>
+                    <span class="day-hours">7 hours</span>
+                </div>
+                <div class="schedule-block">
+                    <div class="schedule-item">
+                        <span class="schedule-time">9:00–9:15</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Quick Quizlet review - "Test" mode</div>
+                            <div class="schedule-desc">Focus on starred/flagged terms from Monday. Active recall only.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">9:15–10:30</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Data Discovery block</div>
+                            <div class="schedule-desc">Esri Learning Plan modules. Vector vs. raster, coordinate systems
+                                (GCS vs. PCS, datums, projections), Living Atlas, discovering content in ArcGIS Online.
+                                After each concept: close the material and explain it aloud in your own words.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item break">
+                        <span class="schedule-time">10:30–10:45</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">☕ Break</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">10:45–12:00</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Mapping &amp; Visualization block</div>
+                            <div class="schedule-desc">Symbology types, basemap changes in Pro and Online, labeling,
+                                layer properties, Smart Mapping. Watch quick-start tutorial videos at 1.5x speed.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item break">
+                        <span class="schedule-time">12:00–12:45</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">🍽️ Lunch - passive watch</div>
+                            <div class="schedule-desc">During lunch, watch "Author a map" and "Share a web map" tutorial
+                                summary videos on YouTube.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">12:45–14:00</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Processing &amp; Analysis block</div>
+                            <div class="schedule-desc">Attribute tables, geoprocessing tools (Buffer, Clip, Dissolve,
+                                Intersect - WHAT each does, not step-by-step), Select by Attributes vs. Select by
+                                Location, editing features in ArcGIS Pro.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item break">
+                        <span class="schedule-time">14:00–14:15</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">☕ Break</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">14:15–15:15</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title" style="color:var(--red)">Content Management &amp; Sharing -
+                                don't skip this block</div>
+                            <div class="schedule-desc">Sharing levels (Private/Group/Organization/Everyone),
+                                validate-before-sharing workflow, ArcGIS Online organization structure (members, roles,
+                                groups, items, folders), web maps vs. web layers, Content page navigation.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item break">
+                        <span class="schedule-time">15:15–15:30</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">☕ Break</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">15:30–16:30</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Practice test session - FormaSIG</div>
+                            <div class="schedule-desc">For EVERY question, understand WHY the correct answer is right
+                                and WHY each wrong answer is wrong. Track which domain your mistakes fall into.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">16:30–17:00</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Quizlet - second intensive pass</div>
+                            <div class="schedule-desc">Focus exclusively on terms you got wrong or flagged. Use "Write"
+                                or "Test" mode for active recall.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">17:00–17:15</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Update cheat sheet</div>
+                            <div class="schedule-desc">Reduce to 15–20 facts you keep getting wrong. Write them by hand
+                                - handwriting improves retention.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="day-block">
+                <div class="day-header">
+                    <span class="day-badge">Day 3</span>
+                    <span class="day-title">Wednesday morning - Sharpen and warm up</span>
+                    <span class="day-hours">2 hours</span>
+                </div>
+                <div class="schedule-block">
+                    <div class="schedule-item">
+                        <span class="schedule-time">0:00–0:20</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Final Quizlet test - full 107 terms</div>
+                            <div class="schedule-desc">"Test" mode. Score yourself. Any terms you miss go on a tiny
+                                final review card.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">0:20–0:50</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Rapid domain sweep</div>
+                            <div class="schedule-desc">7–8 min per domain. Re-read the EIG skills list and confirm you
+                                can explain each skill. For any you still can't explain, read the first two paragraphs
+                                in ArcGIS documentation.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">0:50–1:10</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title" style="color:var(--red)">Content Management &amp; Sharing -
+                                final review</div>
+                            <div class="schedule-desc">Re-read your notes on sharing levels, organizations, groups, and
+                                the validate-before-sharing workflow.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">1:10–1:25</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Read cheat sheet, then close it</div>
+                            <div class="schedule-desc">Try to recite the key points from memory. If you can recite it,
+                                you know it.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">1:25–1:40</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Exam logistics prep</div>
+                            <div class="schedule-desc">Verify Pearson VUE login, ID, test center location or online
+                                setup. If online: test webcam, clear desk, ensure wired internet connection.</div>
+                        </div>
+                    </div>
+                    <div class="schedule-item break">
+                        <span class="schedule-time">1:40–2:00</span>
+                        <div class="schedule-content">
+                            <div class="schedule-title">Mental reset</div>
+                            <div class="schedule-desc">Stop studying. Light stretching or a short walk. Deep breathing:
+                                inhale 4 sec, hold 7, exhale 8. Visualize yourself calmly working through questions.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── TEST-TAKING STRATEGY ──────────────────────── -->
+        <section>
+            <div class="section-label">Exam day strategy - 72 seconds per question</div>
+
+            <div class="strategy-grid">
+                <div class="strategy-card">
+                    <div class="strategy-num">01</div>
+                    <div class="strategy-title">First pass - 60–65 min</div>
+                    <div class="strategy-body">Answer confidently or eliminate two wrong answers, make your best guess,
+                        flag the question, move on. Never more than 2 minutes per question. At 30 min → ~question 25. At
+                        60 min → ~question 50.</div>
+                </div>
+                <div class="strategy-card">
+                    <div class="strategy-num">02</div>
+                    <div class="strategy-title">Second pass - 15–20 min</div>
+                    <div class="strategy-body">Return to flagged questions with fresh eyes. Later questions sometimes
+                        provide context clues for earlier ones. Re-read the question stem - look for keywords you missed
+                        (NOT, EXCEPT, BEST, MOST).</div>
+                </div>
+                <div class="strategy-card">
+                    <div class="strategy-num">03</div>
+                    <div class="strategy-title">Final pass - 5–10 min</div>
+                    <div class="strategy-body">Verify no questions are left blank - unanswered questions count as wrong.
+                        Don't change answers unless you have a specific reason. First instincts based on solid knowledge
+                        are usually correct.</div>
+                </div>
+                <div class="strategy-card">
+                    <div class="strategy-num">04</div>
+                    <div class="strategy-title">Elimination rules</div>
+                    <div class="strategy-body">Answers with absolutes ("always", "never", "only") are usually wrong. If
+                        two options are opposites, one is likely correct. The longest, most specific answer is often
+                        right. Factually true but doesn't answer what was asked? It's a distractor.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── TIPS SECTION ──────────────────────────────── -->
+        <div class="tips-section">
+            <div class="tips-header">
+                <span class="tips-icon">⚡</span>
+                <div class="tips-title">Quick tips - <span>don't forget anything</span></div>
+            </div>
+
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-card-icon">🕐</div>
+                    <div class="tip-card-title">You need exactly 10.5 hours</div>
+                    <div class="tip-card-body">1.5h Monday · 7h Tuesday · 2h Wednesday morning. Protect those hours.
+                        Skip social media entirely on Tuesday.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-card-icon">🎯</div>
+                    <div class="tip-card-title">Four domains, all mandatory</div>
+                    <div class="tip-card-body">You MUST pass all four domains individually. A 100% score on three
+                        domains CANNOT save a failed fourth domain. This is the #1 way people fail.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-card-icon">📋</div>
+                    <div class="tip-card-title">EIG is your bible</div>
+                    <div class="tip-card-body">Every skill listed in the Exam Information Guide is a potential question.
+                        If you can't explain a skill confidently, study it. Go through it line by line.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-card-icon">🔗</div>
+                    <div class="tip-card-title">Content Management kills veterans</div>
+                    <div class="tip-card-body">The smallest domain (18%) is the most dangerous. Study sharing levels,
+                        groups, organizations, and the validate-before-sharing workflow until you know them cold.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-card-icon">🧠</div>
+                    <div class="tip-card-title">Active recall beats reading</div>
+                    <div class="tip-card-body">After every study block, close the material and explain it aloud from
+                        memory. This "blurting" method doubles retention compared to passive re-reading.</div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-card-icon">🚫</div>
+                    <div class="tip-card-title">Don't waste time on out-of-scope topics</div>
+                    <div class="tip-card-body">Python, ModelBuilder, StoryMaps, Field Maps, Survey123, 3D data, GPS,
+                        raster processing - none of these are on the exam. Zero minutes on them.</div>
+                </div>
+            </div>
+
+            <div class="tips-checklist">
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>Read the EIG and create your personal gap map (confident / shaky / don't know) before studying
+                        anything else</span>
+                </div>
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>Complete all four domain blocks on Tuesday - don't skip or shorten the Sharing block, even if
+                        you're tired</span>
+                </div>
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>Use the FormaSIG practice test as a learning tool, not a score tracker - understand every
+                        wrong answer</span>
+                </div>
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>Write your cheat sheet by hand on Tuesday evening - the act of handwriting reinforces
+                        memory</span>
+                </div>
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>On exam morning: eat protein + complex carbs, moderate caffeine, stop studying 20 minutes
+                        before the exam</span>
+                </div>
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>If online proctored: wired internet, cleared desk, webcam tested, Pearson VUE account verified
+                        the day before</span>
+                </div>
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>During the exam: flag uncertain questions and move on immediately - never spend more than 2
+                        minutes on any single question</span>
+                </div>
+                <div class="tips-check">
+                    <span class="check-mark">✓</span>
+                    <span>Leave zero questions blank - an unanswered question is a guaranteed wrong answer</span>
+                </div>
+            </div>
+
+            <div class="tips-danger">
+                <div class="tips-danger-title">⚠ The one thing that could trip you up</div>
+                <ul class="tips-danger-list">
+                    <li>ArcGIS Online organizational workflows - if you don't regularly share content or manage groups
+                        at work, Content Management is your weak link. You must pass it separately.</li>
+                    <li>Esri-specific terminology - you may know the theory but not the exact Esri term. The EIG and
+                        Quizlet set cover all the vocabulary you need.</li>
+                    <li>Assuming your work experience covers everything - the exam tests specific Esri workflows that
+                        may differ from how you do things at work. Validate against the EIG.</li>
+                    <li>Skipping the practice test - even one full practice run reveals which domain's questions you
+                        actually struggle with, not just which content you think you know.</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer>Created by Lorenzo Gurgoglione 2026. · Quiz Hub</footer>
+
+</body>
+
+</html>
