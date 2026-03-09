@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#0d0d0d; --surface:#161616; --border:#2a2a2a; --accent:#c8f060; --text:#f0f0f0; --muted:#666; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; min-height:100vh; padding:3rem 2rem; }
+    header { max-width:780px; margin:0 auto 4rem; border-bottom:1px solid var(--border); padding-bottom:2rem; display:flex; justify-content:space-between; align-items:flex-end; }
+    .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.6rem; letter-spacing:-0.02em; }
+    .logo span { color:var(--accent); }
+    .tagline { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; }
+    main { max-width:780px; margin:0 auto; }
+    .section-label { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.15em; color:var(--muted); margin-bottom:1.2rem; }
+    .quiz-grid { display:grid; gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:4rem; }
+    .quiz-card { background:var(--surface); padding:1.6rem 2rem; display:flex; justify-content:space-between; align-items:center; text-decoration:none; color:var(--text); transition:background 0.15s; gap:1rem; }
+    .quiz-card:hover { background:#1e1e1e; }
+    .quiz-card:hover .arrow { transform:translateX(4px); color:var(--accent); }
+    .card-left { display:flex; align-items:center; gap:1.4rem; }
+    .card-index { font-size:0.65rem; color:var(--muted); min-width:1.5rem; }
+    .card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:0.2rem; }
+    .card-meta { font-size:0.68rem; color:var(--muted); }
+    .card-right { display:flex; align-items:center; gap:1rem; flex-shrink:0; }
+    .tag { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.1em; padding:0.25rem 0.6rem; border:1px solid var(--border); color:var(--muted); border-radius:2px; }
+    .tag.active { border-color:var(--accent); color:var(--accent); }
+    .arrow { font-size:1rem; transition:transform 0.15s,color 0.15s; color:var(--muted); }
+    .quiz-card.empty { opacity:0.3; pointer-events:none; }
+    footer { max-width:780px; margin:0 auto; padding-top:2rem; border-top:1px solid var(--border); font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">Quiz<span>.</span></div>
+    <div class="tagline">Révisions & certifications</div>
+  </header>
+  <main>
+    <div class="section-label">— Quiz disponibles</div>
+    <div class="quiz-grid">
+      <a class="quiz-card" href="./gis/">
+        <div class="card-left">
+          <span class="card-index">01</span>
+          <div>
+            <div class="card-title">GIS Foundation — EGFF 2024</div>
+            <div class="card-meta">Esri · 4 domaines · Pearson VUE</div>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="tag active">Actif</span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+      <div class="quiz-card empty">
+        <div class="card-left">
+          <span class="card-index">02</span>
+          <div>
+            <div class="card-title">À venir</div>
+            <div class="card-meta">Prochain quiz</div>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="tag">Bientôt</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>Tous les quiz sont indépendants — un dossier par thème.</footer>
+</body>
+</html>
