@@ -1,577 +1,812 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz GIS — Série 4</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0d0d0d; --surface: #161616; --border: #2a2a2a;
-      --accent: #c8f060; --accent-dim: rgba(200,240,96,0.1);
-      --text: #f0f0f0; --muted: #666;
-      --wrong: #ff5f5f; --wrong-dim: rgba(255,95,95,0.1);
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; padding: 3rem 2rem; }
-    header { max-width: 680px; margin: 0 auto 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
-    .back { font-size: 0.72rem; color: var(--muted); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.15s; }
-    .back:hover { color: var(--accent); }
-    .header-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; }
-    .progress-wrap { font-size: 0.65rem; color: var(--muted); text-align: right; }
-    .progress-bar { height: 2px; background: var(--border); border-radius: 1px; margin-top: 0.4rem; width: 80px; margin-left: auto; }
-    .progress-fill { height: 100%; background: var(--accent); border-radius: 1px; transition: width 0.3s ease; }
-    main { max-width: 680px; margin: 0 auto; }
-    .question-meta { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 1.2rem; }
-    .question-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.15rem; line-height: 1.5; margin-bottom: 2rem; color: var(--text); }
-    .options { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 2rem; }
-    .option { background: var(--surface); padding: 1.1rem 1.4rem; display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: background 0.12s; border: none; text-align: left; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.85rem; width: 100%; }
-    .option:hover:not(:disabled) { background: #1e1e1e; }
-    .option-letter { font-size: 0.65rem; color: var(--muted); min-width: 1.2rem; text-transform: uppercase; }
-    .option.correct { background: var(--accent-dim); border-left: 2px solid var(--accent); }
-    .option.correct .option-letter { color: var(--accent); }
-    .option.wrong { background: var(--wrong-dim); border-left: 2px solid var(--wrong); }
-    .option.wrong .option-letter { color: var(--wrong); }
-    .option:disabled { cursor: default; }
-    .explanation { font-size: 0.78rem; color: var(--muted); line-height: 1.6; padding: 1rem 1.2rem; border-left: 2px solid var(--border); margin-bottom: 2rem; display: none; }
-    .explanation.visible { display: block; }
-    .btn-next { background: var(--accent); color: #0d0d0d; border: none; padding: 0.85rem 2rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.05em; display: none; transition: opacity 0.15s; }
-    .btn-next:hover { opacity: 0.85; }
-    .btn-next.visible { display: inline-block; }
-    #result-screen { display: none; text-align: left; }
-    .result-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 1rem; }
-    .result-score { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 4rem; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
-    .result-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 3rem; }
-    .result-breakdown { background: var(--border); height: 1px; margin-bottom: 2rem; }
-    .btn-retry { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.85rem 2rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.05em; transition: background 0.15s; margin-right: 1rem; }
-    .btn-retry:hover { background: var(--accent-dim); }
-    .btn-hub { font-size: 0.72rem; color: var(--muted); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.15s; }
-    .btn-hub:hover { color: var(--text); }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --accent: #c8f060;
+      --accent-dim: rgba(200, 240, 96, 0.1);
+      --text: #f0f0f0;
+      --muted: #666;
+      --wrong: #ff5f5f;
+      --wrong-dim: rgba(255, 95, 95, 0.1);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      padding: 3rem 2rem;
+    }
+
+    header {
+      max-width: 680px;
+      margin: 0 auto 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    .back {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.15s;
+    }
+
+    .back:hover {
+      color: var(--accent);
+    }
+
+    .header-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .progress-wrap {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .progress-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      margin-top: 0.4rem;
+      width: 80px;
+      margin-left: auto;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+      transition: width 0.3s ease;
+    }
+
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .question-meta {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .question-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      color: var(--text);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .option {
+      background: var(--surface);
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: background 0.12s;
+      border: none;
+      text-align: left;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    .option:hover:not(:disabled) {
+      background: #1e1e1e;
+    }
+
+    .option-letter {
+      font-size: 0.65rem;
+      color: var(--muted);
+      min-width: 1.2rem;
+      text-transform: uppercase;
+    }
+
+    .option.correct {
+      background: var(--accent-dim);
+      border-left: 2px solid var(--accent);
+    }
+
+    .option.correct .option-letter {
+      color: var(--accent);
+    }
+
+    .option.wrong {
+      background: var(--wrong-dim);
+      border-left: 2px solid var(--wrong);
+    }
+
+    .option.wrong .option-letter {
+      color: var(--wrong);
+    }
+
+    .option:disabled {
+      cursor: default;
+    }
+
+    .explanation {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 1rem 1.2rem;
+      border-left: 2px solid var(--border);
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .explanation.visible {
+      display: block;
+    }
+
+    .btn-next {
+      background: var(--accent);
+      color: #0d0d0d;
+      border: none;
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      display: none;
+      transition: opacity 0.15s;
+    }
+
+    .btn-next:hover {
+      opacity: 0.85;
+    }
+
+    .btn-next.visible {
+      display: inline-block;
+    }
+
+    #result-screen {
+      display: none;
+      text-align: left;
+    }
+
+    .result-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .result-score {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 4rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 3rem;
+    }
+
+    .result-breakdown {
+      background: var(--border);
+      height: 1px;
+      margin-bottom: 2rem;
+    }
+
+    .btn-retry {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.15s;
+      margin-right: 1rem;
+    }
+
+    .btn-retry:hover {
+      background: var(--accent-dim);
+    }
+
+    .btn-hub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.15s;
+    }
+
+    .btn-hub:hover {
+      color: var(--text);
+    }
   </style>
 </head>
+
 <body>
-<header>
-  <a class="back" href="../">← Hub</a>
-  <div class="header-title">GIS Foundation — Série 4</div>
-  <div class="progress-wrap">
-    <span id="progress-text">1 / 35</span>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:2.86%"></div></div>
-  </div>
-</header>
-<main>
-  <div id="quiz-screen">
-    <div class="question-meta" id="question-domain">Domaine · —</div>
-    <div class="question-text" id="question-text"></div>
-    <div class="options" id="options-list"></div>
-    <div class="explanation" id="explanation"></div>
-    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
-  </div>
-  <div id="result-screen">
-    <div class="result-label">— Résultat final</div>
-    <div class="result-score" id="result-score"></div>
-    <div class="result-sub" id="result-sub"></div>
-    <div class="result-breakdown"></div>
-    <button class="btn-retry" onclick="restart()">Recommencer</button>
-    <a class="btn-hub" href="../">← Retour au hub</a>
-  </div>
-</main>
-<script>
-const questions = [
+  <header>
+    <a class="back" href="../">← Hub</a>
+    <div class="header-title">GIS Foundation — Série 4</div>
+    <div class="progress-wrap">
+      <span id="progress-text">1 / 35</span>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:2.86%"></div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div id="quiz-screen">
+      <div class="question-meta" id="question-domain">Domaine · —</div>
+      <div class="question-text" id="question-text"></div>
+      <div class="options" id="options-list"></div>
+      <div class="explanation" id="explanation"></div>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
+    </div>
+    <div id="result-screen">
+      <div class="result-label">— Résultat final</div>
+      <div class="result-score" id="result-score"></div>
+      <div class="result-sub" id="result-sub"></div>
+      <div class="result-breakdown"></div>
+      <button class="btn-retry" onclick="restart()">Recommencer</button>
+      <a class="btn-hub" href="../">← Retour au hub</a>
+    </div>
+  </main>
+  <script>
+    const questions = [
 
-  // GEOGRAPHIC COORDINATE SYSTEMS
-  {
-    domain: "Data Discovery — Coordinate Systems",
-    question: "Which statement accurately describes a geographic coordinate system?",
-    options: [
-      "It measures coordinates in linear units such as feet or meters",
-      "It gives linear measurements on a planar surface from a predefined starting point",
-      "It uses a 3D spheroidal model to identify specific locations on the earth",
-      "It is only used for local or regional mapping projects"
-    ],
-    answer: 2,
-    explanation: "A geographic coordinate system uses a 3D spheroidal model to identify specific locations on the earth. Its coordinates are based on latitude and longitude values — angular units, NOT linear units like meters. Linear units are for projected coordinate systems."
-  },
-  {
-    domain: "Data Discovery — Coordinate Systems",
-    question: "A geographic coordinate system is represented visually on a map by:",
-    options: [
-      "A grid of equal-area rectangles covering the map",
-      "A graticule of intersecting parallels (latitude) and meridians (longitude)",
-      "A series of contour lines showing elevation",
-      "A network of roads and administrative boundaries"
-    ],
-    answer: 1,
-    explanation: "A geographic coordinate system is represented by a graticule — the network of intersecting parallels (lines of latitude) and meridians (lines of longitude) visible on a globe or geographic map."
-  },
-  {
-    domain: "Data Discovery — Coordinate Systems",
-    question: "Why is a geographic coordinate system essential for GIS functionality?",
-    options: [
-      "It allows GIS to store coordinate values in the attribute table",
-      "It identifies locations using linear measurements from a central point",
-      "It converts raster data to vector format automatically",
-      "It enables GIS to accurately display spatial data on a map and interpret coordinate values"
-    ],
-    answer: 3,
-    explanation: "A geographic coordinate system is necessary for GIS to properly interpret coordinate values and accurately display spatial data on a map. Without it, GIS cannot correctly position features in space."
-  },
-  {
-    domain: "Data Discovery — Coordinate Systems",
-    question: "What is the main impact of using multiple geographic coordinate systems in a single GIS project?",
-    options: [
-      "It contributes to data misalignment between layers",
-      "It helps improve overall data alignment",
-      "It increases analysis accuracy automatically",
-      "It allows more coordinate units to be used simultaneously"
-    ],
-    answer: 0,
-    explanation: "Using multiple geographic coordinate systems in a GIS project contributes to data misalignment — features from different systems will not overlay correctly on the map, leading to spatial errors."
-  },
-  {
-    domain: "Data Discovery — Coordinate Systems",
-    question: "To create a map that compares global data from multiple countries, which type of spatial reference should be used?",
-    options: [
-      "Local datum",
-      "Projected transformation",
-      "Geographic transformation",
-      "Earth-centered datum"
-    ],
-    answer: 3,
-    explanation: "An Earth-centered datum (like WGS84) is the best choice for global data comparison because it models the entire Earth consistently. Local datums are optimized for specific regions and cause misalignment when combined with global data."
-  },
+      // GEOGRAPHIC COORDINATE SYSTEMS
+      {
+        domain: "Data Discovery — Coordinate Systems",
+        question: "Which statement accurately describes a geographic coordinate system?",
+        options: [
+          "It measures coordinates in linear units such as feet or meters",
+          "It gives linear measurements on a planar surface from a predefined starting point",
+          "It uses a 3D spheroidal model to identify specific locations on the earth",
+          "It is only used for local or regional mapping projects"
+        ],
+        answer: 2,
+        explanation: "A geographic coordinate system uses a 3D spheroidal model to identify specific locations on the earth. Its coordinates are based on latitude and longitude values — angular units, NOT linear units like meters. Linear units are for projected coordinate systems."
+      },
+      {
+        domain: "Data Discovery — Coordinate Systems",
+        question: "A geographic coordinate system is represented visually on a map by:",
+        options: [
+          "A grid of equal-area rectangles covering the map",
+          "A graticule of intersecting parallels (latitude) and meridians (longitude)",
+          "A series of contour lines showing elevation",
+          "A network of roads and administrative boundaries"
+        ],
+        answer: 1,
+        explanation: "A geographic coordinate system is represented by a graticule — the network of intersecting parallels (lines of latitude) and meridians (lines of longitude) visible on a globe or geographic map."
+      },
+      {
+        domain: "Data Discovery — Coordinate Systems",
+        question: "Why is a geographic coordinate system essential for GIS functionality?",
+        options: [
+          "It allows GIS to store coordinate values in the attribute table",
+          "It identifies locations using linear measurements from a central point",
+          "It converts raster data to vector format automatically",
+          "It enables GIS to accurately display spatial data on a map and interpret coordinate values"
+        ],
+        answer: 3,
+        explanation: "A geographic coordinate system is necessary for GIS to properly interpret coordinate values and accurately display spatial data on a map. Without it, GIS cannot correctly position features in space."
+      },
+      {
+        domain: "Data Discovery — Coordinate Systems",
+        question: "What is the main impact of using multiple geographic coordinate systems in a single GIS project?",
+        options: [
+          "It contributes to data misalignment between layers",
+          "It helps improve overall data alignment",
+          "It increases analysis accuracy automatically",
+          "It allows more coordinate units to be used simultaneously"
+        ],
+        answer: 0,
+        explanation: "Using multiple geographic coordinate systems in a GIS project contributes to data misalignment — features from different systems will not overlay correctly on the map, leading to spatial errors."
+      },
+      {
+        domain: "Data Discovery — Coordinate Systems",
+        question: "To create a map that compares global data from multiple countries, which type of spatial reference should be used?",
+        options: [
+          "Local datum",
+          "Projected transformation",
+          "Geographic transformation",
+          "Earth-centered datum"
+        ],
+        answer: 3,
+        explanation: "An Earth-centered datum (like WGS84) is the best choice for global data comparison because it models the entire Earth consistently. Local datums are optimized for specific regions and cause misalignment when combined with global data."
+      },
 
-  // PROJECTED COORDINATE SYSTEMS
-  {
-    domain: "Data Discovery — Coordinate Systems",
-    question: "Which statement accurately describes a projected coordinate system?",
-    options: [
-      "It uses a 3D spheroidal model with latitude and longitude values",
-      "It is represented by a graticule of parallels and meridians",
-      "It gives linear measurements on a planar surface from a predefined starting point",
-      "It cannot be used with raster data"
-    ],
-    answer: 2,
-    explanation: "A projected coordinate system gives linear measurements (in meters, feet, etc.) on a planar (flat) surface from a predefined starting point. It is the 2D version of geographic data, flattened using a mathematical projection."
-  },
-  {
-    domain: "Data Discovery — Coordinate Systems",
-    question: "Which statement best describes the two types of coordinate systems used in GIS?",
-    options: [
-      "A geographic coordinate system converts locations to a flat map based on a projected system",
-      "A projected coordinate system uses a 3D spheroidal model to identify locations on the earth's surface",
-      "A geographic coordinate system uses a 3D spheroidal model; a projected coordinate system converts locations to a flat map",
-      "Both systems use linear units — the difference is only in the scale"
-    ],
-    answer: 2,
-    explanation: "A geographic coordinate system uses a 3D spheroidal model (latitude/longitude). A projected coordinate system mathematically converts those spheroidal locations to a flat 2D map using linear units like meters."
-  },
+      // PROJECTED COORDINATE SYSTEMS
+      {
+        domain: "Data Discovery — Coordinate Systems",
+        question: "Which statement accurately describes a projected coordinate system?",
+        options: [
+          "It uses a 3D spheroidal model with latitude and longitude values",
+          "It is represented by a graticule of parallels and meridians",
+          "It gives linear measurements on a planar surface from a predefined starting point",
+          "It cannot be used with raster data"
+        ],
+        answer: 2,
+        explanation: "A projected coordinate system gives linear measurements (in meters, feet, etc.) on a planar (flat) surface from a predefined starting point. It is the 2D version of geographic data, flattened using a mathematical projection."
+      },
+      {
+        domain: "Data Discovery — Coordinate Systems",
+        question: "Which statement best describes the two types of coordinate systems used in GIS?",
+        options: [
+          "A geographic coordinate system converts locations to a flat map based on a projected system",
+          "A projected coordinate system uses a 3D spheroidal model to identify locations on the earth's surface",
+          "A geographic coordinate system uses a 3D spheroidal model; a projected coordinate system converts locations to a flat map",
+          "Both systems use linear units — the difference is only in the scale"
+        ],
+        answer: 2,
+        explanation: "A geographic coordinate system uses a 3D spheroidal model (latitude/longitude). A projected coordinate system mathematically converts those spheroidal locations to a flat 2D map using linear units like meters."
+      },
 
-  // PROJECTIONS & DISTORTIONS
-  {
-    domain: "Data Discovery — Projections",
-    question: "Which statement correctly identifies a distortion introduced by map projections?",
-    options: [
-      "Projections preserve at minimum shape and area while distorting other properties",
-      "Projections introduce distortions to at least two properties: shape, area, distance or direction",
-      "Projections preserve at minimum two map properties simultaneously",
-      "Projections only distort area, never shape or direction"
-    ],
-    answer: 1,
-    explanation: "Projections always introduce distortions to at least two of the four spatial properties: shape, area, distance and direction. No projection can preserve all four simultaneously — that is why choosing the right projection for your purpose matters."
-  },
-  {
-    domain: "Data Discovery — Projections",
-    question: "You need to create a map to measure how much total land area is within a national park. Which spatial property must be preserved?",
-    options: [
-      "Direction",
-      "Distance",
-      "Shape",
-      "Area"
-    ],
-    answer: 3,
-    explanation: "To accurately measure land area, you must use an equal-area (area-preserving) projection. If area is distorted, your measurements will be incorrect. Shape, distance and direction are less critical for area calculations."
-  },
-  {
-    domain: "Data Discovery — Projections",
-    question: "Which three surfaces are developable surfaces used to create map projections?",
-    options: [
-      "Sphere, Ellipse, Cube",
-      "Cylinder, Plane, Cone",
-      "Cylinder, Sphere, Cone",
-      "Ellipse, Plane, Cylinder"
-    ],
-    answer: 1,
-    explanation: "The three developable surfaces used in map projections are: Cylinder (cylindrical projections like Mercator), Cone (conic projections like Lambert) and Plane (planar/azimuthal projections). A sphere and ellipse are not developable surfaces — they cannot be unrolled flat."
-  },
-  {
-    domain: "Data Discovery — Projections",
-    question: "You need a map of the world for a general presentation that has minimal distortion overall but does not perfectly preserve any single spatial property. Which projection type should you use?",
-    options: [
-      "Conformal",
-      "Azimuthal",
-      "Gnomonic",
-      "Compromise"
-    ],
-    answer: 3,
-    explanation: "A compromise projection does not perfectly preserve any of the four spatial properties but minimizes overall distortion. It produces a visually pleasing result for general world maps — examples include Robinson and Winkel Tripel projections."
-  },
+      // PROJECTIONS & DISTORTIONS
+      {
+        domain: "Data Discovery — Projections",
+        question: "Which statement correctly identifies a distortion introduced by map projections?",
+        options: [
+          "Projections preserve at minimum shape and area while distorting other properties",
+          "Projections introduce distortions to at least two properties: shape, area, distance or direction",
+          "Projections preserve at minimum two map properties simultaneously",
+          "Projections only distort area, never shape or direction"
+        ],
+        answer: 1,
+        explanation: "Projections always introduce distortions to at least two of the four spatial properties: shape, area, distance and direction. No projection can preserve all four simultaneously — that is why choosing the right projection for your purpose matters."
+      },
+      {
+        domain: "Data Discovery — Projections",
+        question: "You need to create a map to measure how much total land area is within a national park. Which spatial property must be preserved?",
+        options: [
+          "Direction",
+          "Distance",
+          "Shape",
+          "Area"
+        ],
+        answer: 3,
+        explanation: "To accurately measure land area, you must use an equal-area (area-preserving) projection. If area is distorted, your measurements will be incorrect. Shape, distance and direction are less critical for area calculations."
+      },
+      {
+        domain: "Data Discovery — Projections",
+        question: "Which three surfaces are developable surfaces used to create map projections?",
+        options: [
+          "Sphere, Ellipse, Cube",
+          "Cylinder, Plane, Cone",
+          "Cylinder, Sphere, Cone",
+          "Ellipse, Plane, Cylinder"
+        ],
+        answer: 1,
+        explanation: "The three developable surfaces used in map projections are: Cylinder (cylindrical projections like Mercator), Cone (conic projections like Lambert) and Plane (planar/azimuthal projections). A sphere and ellipse are not developable surfaces — they cannot be unrolled flat."
+      },
+      {
+        domain: "Data Discovery — Projections",
+        question: "You need a map of the world for a general presentation that has minimal distortion overall but does not perfectly preserve any single spatial property. Which projection type should you use?",
+        options: [
+          "Conformal",
+          "Azimuthal",
+          "Gnomonic",
+          "Compromise"
+        ],
+        answer: 3,
+        explanation: "A compromise projection does not perfectly preserve any of the four spatial properties but minimizes overall distortion. It produces a visually pleasing result for general world maps — examples include Robinson and Winkel Tripel projections."
+      },
 
-  // PROJECTION TYPES TABLE
-  {
-    domain: "Data Discovery — Projections",
-    question: "Which projection type should you use to accurately calculate the size of a geographic feature such as a national park?",
-    options: [
-      "Equal Area",
-      "Conformal",
-      "Gnomonic",
-      "Azimuthal"
-    ],
-    answer: 0,
-    explanation: "Equal Area projections preserve the surface area of features. They are the correct choice whenever accurate area measurements are required — like calculating the total area of a park, country or forest."
-  },
-  {
-    domain: "Data Discovery — Projections",
-    question: "A meteorologist needs to create a topographic map that preserves the shapes of local features and angles. Which projection type should be used?",
-    options: [
-      "Equidistant",
-      "Equal Area",
-      "Azimuthal",
-      "Conformal"
-    ],
-    answer: 3,
-    explanation: "Conformal projections preserve local shapes and angles. They are used for topographic maps, weather maps and navigation charts where accurate representation of local shape is critical."
-  },
-  {
-    domain: "Data Discovery — Projections",
-    question: "A logistics company needs to calculate delivery routes from a central warehouse. Which projection type best preserves the distances needed for this analysis?",
-    options: [
-      "Compromise",
-      "Conformal",
-      "Equidistant",
-      "Equal Area"
-    ],
-    answer: 2,
-    explanation: "Equidistant projections preserve distances from one or two specific points. They are ideal for route calculation and distance measurement from a central location — like a warehouse dispatching deliveries."
-  },
-  {
-    domain: "Data Discovery — Projections",
-    question: "An aeronautical navigator needs a projection where all straight lines represent the shortest path between two points. Which projection should be used?",
-    options: [
-      "Gnomonic",
-      "Equal Area",
-      "Compromise",
-      "Conformal"
-    ],
-    answer: 0,
-    explanation: "Gnomonic projections have the unique property that all straight lines on the map represent great circles — the shortest paths between two points on the globe. This makes them ideal for precision navigation."
-  },
-  {
-    domain: "Data Discovery — Projections",
-    question: "Which projection type preserves directions from a central point and is used for aeronautical navigation?",
-    options: [
-      "Equidistant",
-      "Conformal",
-      "Equal Area",
-      "Azimuthal"
-    ],
-    answer: 3,
-    explanation: "Azimuthal projections preserve directions from a central point. They are used in aeronautical navigation where knowing the correct bearing from a reference point is critical."
-  },
+      // PROJECTION TYPES TABLE
+      {
+        domain: "Data Discovery — Projections",
+        question: "Which projection type should you use to accurately calculate the size of a geographic feature such as a national park?",
+        options: [
+          "Equal Area",
+          "Conformal",
+          "Gnomonic",
+          "Azimuthal"
+        ],
+        answer: 0,
+        explanation: "Equal Area projections preserve the surface area of features. They are the correct choice whenever accurate area measurements are required — like calculating the total area of a park, country or forest."
+      },
+      {
+        domain: "Data Discovery — Projections",
+        question: "A meteorologist needs to create a topographic map that preserves the shapes of local features and angles. Which projection type should be used?",
+        options: [
+          "Equidistant",
+          "Equal Area",
+          "Azimuthal",
+          "Conformal"
+        ],
+        answer: 3,
+        explanation: "Conformal projections preserve local shapes and angles. They are used for topographic maps, weather maps and navigation charts where accurate representation of local shape is critical."
+      },
+      {
+        domain: "Data Discovery — Projections",
+        question: "A logistics company needs to calculate delivery routes from a central warehouse. Which projection type best preserves the distances needed for this analysis?",
+        options: [
+          "Compromise",
+          "Conformal",
+          "Equidistant",
+          "Equal Area"
+        ],
+        answer: 2,
+        explanation: "Equidistant projections preserve distances from one or two specific points. They are ideal for route calculation and distance measurement from a central location — like a warehouse dispatching deliveries."
+      },
+      {
+        domain: "Data Discovery — Projections",
+        question: "An aeronautical navigator needs a projection where all straight lines represent the shortest path between two points. Which projection should be used?",
+        options: [
+          "Gnomonic",
+          "Equal Area",
+          "Compromise",
+          "Conformal"
+        ],
+        answer: 0,
+        explanation: "Gnomonic projections have the unique property that all straight lines on the map represent great circles — the shortest paths between two points on the globe. This makes them ideal for precision navigation."
+      },
+      {
+        domain: "Data Discovery — Projections",
+        question: "Which projection type preserves directions from a central point and is used for aeronautical navigation?",
+        options: [
+          "Equidistant",
+          "Conformal",
+          "Equal Area",
+          "Azimuthal"
+        ],
+        answer: 3,
+        explanation: "Azimuthal projections preserve directions from a central point. They are used in aeronautical navigation where knowing the correct bearing from a reference point is critical."
+      },
 
-  // ARCGIS PRO INTERFACE
-  {
-    domain: "Data Discovery — ArcGIS Pro",
-    question: "Which element of the ArcGIS Pro user interface displays the contents of the active view?",
-    options: [
-      "Ribbon",
-      "Catalog pane",
-      "View",
-      "Contents pane"
-    ],
-    answer: 3,
-    explanation: "The Contents pane in ArcGIS Pro displays the layers and elements of the currently active view — the map, scene or layout. It is the primary way to manage layer visibility, order and properties."
-  },
-  {
-    domain: "Data Discovery — ArcGIS Pro",
-    question: "Which two items can be stored in an ArcGIS Pro project for later use?",
-    options: [
-      "Scripts and data frames",
-      "Maps and layouts",
-      "Python notebooks and batch scripts",
-      "Attribute tables and toolboxes only"
-    ],
-    answer: 1,
-    explanation: "An ArcGIS Pro project (.aprx) stores maps (geographic views with layers) and layouts (page compositions for printing). These are the primary project items alongside connections to data sources and toolboxes."
-  },
-  {
-    domain: "Data Discovery — ArcGIS Pro",
-    question: "Which best describes how to share a web layer from ArcGIS Pro?",
-    options: [
-      "Save the layer as a layer package on disk",
-      "Export the layer as a shapefile then upload it",
-      "Use the Publishing tab to share the layer",
-      "Right-click the layer in the Contents pane and choose Share"
-    ],
-    answer: 2,
-    explanation: "In ArcGIS Pro, the correct workflow for sharing a web layer is to use the Publishing tab (Share tab → Web Layer). This publishes the layer directly to ArcGIS Online or an Enterprise portal."
-  },
-  {
-    domain: "Data Discovery — ArcGIS Pro",
-    question: "You want to zoom the map view so that all features of a specific layer are visible. What is the best approach in ArcGIS Pro?",
-    options: [
-      "Use the Explore tool to pan manually to the features",
-      "Use your mouse wheel to scroll until features appear",
-      "In the Contents pane, right-click the layer and choose Zoom To Layer",
-      "Double-click the layer name in the Contents pane"
-    ],
-    answer: 2,
-    explanation: "Right-clicking a layer in the Contents pane and choosing 'Zoom To Layer' is the most reliable way to zoom the view to the full extent of that layer's features in ArcGIS Pro."
-  },
+      // ARCGIS PRO INTERFACE
+      {
+        domain: "Data Discovery — ArcGIS Pro",
+        question: "Which element of the ArcGIS Pro user interface displays the contents of the active view?",
+        options: [
+          "Ribbon",
+          "Catalog pane",
+          "View",
+          "Contents pane"
+        ],
+        answer: 3,
+        explanation: "The Contents pane in ArcGIS Pro displays the layers and elements of the currently active view — the map, scene or layout. It is the primary way to manage layer visibility, order and properties."
+      },
+      {
+        domain: "Data Discovery — ArcGIS Pro",
+        question: "Which two items can be stored in an ArcGIS Pro project for later use?",
+        options: [
+          "Scripts and data frames",
+          "Maps and layouts",
+          "Python notebooks and batch scripts",
+          "Attribute tables and toolboxes only"
+        ],
+        answer: 1,
+        explanation: "An ArcGIS Pro project (.aprx) stores maps (geographic views with layers) and layouts (page compositions for printing). These are the primary project items alongside connections to data sources and toolboxes."
+      },
+      {
+        domain: "Data Discovery — ArcGIS Pro",
+        question: "Which best describes how to share a web layer from ArcGIS Pro?",
+        options: [
+          "Save the layer as a layer package on disk",
+          "Export the layer as a shapefile then upload it",
+          "Use the Publishing tab to share the layer",
+          "Right-click the layer in the Contents pane and choose Share"
+        ],
+        answer: 2,
+        explanation: "In ArcGIS Pro, the correct workflow for sharing a web layer is to use the Publishing tab (Share tab → Web Layer). This publishes the layer directly to ArcGIS Online or an Enterprise portal."
+      },
+      {
+        domain: "Data Discovery — ArcGIS Pro",
+        question: "You want to zoom the map view so that all features of a specific layer are visible. What is the best approach in ArcGIS Pro?",
+        options: [
+          "Use the Explore tool to pan manually to the features",
+          "Use your mouse wheel to scroll until features appear",
+          "In the Contents pane, right-click the layer and choose Zoom To Layer",
+          "Double-click the layer name in the Contents pane"
+        ],
+        answer: 2,
+        explanation: "Right-clicking a layer in the Contents pane and choosing 'Zoom To Layer' is the most reliable way to zoom the view to the full extent of that layer's features in ArcGIS Pro."
+      },
 
-  // ATTRIBUTE QUERIES
-  {
-    domain: "Processing & Analysis — Attribute Queries",
-    question: "In the attribute query 'Population Is Greater Than 500,000', what component of the query is 'Population'?",
-    options: [
-      "Attribute value",
-      "Operator",
-      "Data type",
-      "Attribute field"
-    ],
-    answer: 3,
-    explanation: "In an attribute query, the structure is: [Attribute field] [Operator] [Attribute value]. 'Population' is the attribute field (the column name in the table). 'Is Greater Than' is the operator. '500,000' is the attribute value."
-  },
-  {
-    domain: "Processing & Analysis — Attribute Queries",
-    question: "Which attribute query will select all parcels with an area smaller than 800 square meters?",
-    options: [
-      "Area Is Equal To 800",
-      "Area Is Less Than Or Equal To 800",
-      "Area Is Less Than 800",
-      "Area Is Below Average 800"
-    ],
-    answer: 2,
-    explanation: "'Smaller than 800' means strictly less than — it excludes 800 exactly. The correct query is 'Area Is Less Than 800'. 'Less Than Or Equal To 800' would also include parcels of exactly 800 square meters."
-  },
-  {
-    domain: "Processing & Analysis — Attribute Queries",
-    question: "A retail analyst wants to find all credit card transactions with a sale amount of at least $500. Which query is correct?",
-    options: [
-      "PymtType Is Equal To Credit AND SaleAmount Is Greater Than Or Equal To 500",
-      "PymtType Is Equal To Cash AND SaleAmount Is Greater Than 499",
-      "PymtType Is Not Equal To Cash AND SaleAmount Is Less Than Or Equal To 500",
-      "PymtType Is Equal To Credit AND SaleAmount Is Less Than 499"
-    ],
-    answer: 0,
-    explanation: "The query needs two conditions: payment type must be 'Credit' AND sale amount must be at least $500 (Greater Than Or Equal To 500). The AND operator requires both conditions to be true simultaneously."
-  },
-  {
-    domain: "Processing & Analysis — Attribute Queries",
-    question: "A priority field in a warranty system contains values: High, Medium or Low. Which data type is associated with this field?",
-    options: [
-      "Double",
-      "Object identifier",
-      "Number",
-      "Text"
-    ],
-    answer: 3,
-    explanation: "The values High, Medium and Low are words (strings), not numbers. Any field storing text values — even if they represent categories or rankings — uses the Text data type. Number/Double are for numeric values."
-  },
-  {
-    domain: "Processing & Analysis — Attribute Queries",
-    question: "Looking at a parks attribute table with columns: Object ID, Park name, Management contact, Daily operating hours, Location, Description — which fields represent feature attributes related to the parks?",
-    options: [
-      "Object ID, park name, management contact, daily operating hours, location",
-      "Park name, daily operating hours, location, description",
-      "Park name, management contact, daily operating hours, location",
-      "All fields including Object ID are feature attributes"
-    ],
-    answer: 1,
-    explanation: "Feature attributes describe characteristics of the park itself: its name, operating hours, location and description. Object ID is a system-generated identifier, not a descriptive attribute. Management contact is also a valid attribute — but the correct answer per the course is park name, daily operating hours, location and description."
-  },
+      // ATTRIBUTE QUERIES
+      {
+        domain: "Processing & Analysis — Attribute Queries",
+        question: "In the attribute query 'Population Is Greater Than 500,000', what component of the query is 'Population'?",
+        options: [
+          "Attribute value",
+          "Operator",
+          "Data type",
+          "Attribute field"
+        ],
+        answer: 3,
+        explanation: "In an attribute query, the structure is: [Attribute field] [Operator] [Attribute value]. 'Population' is the attribute field (the column name in the table). 'Is Greater Than' is the operator. '500,000' is the attribute value."
+      },
+      {
+        domain: "Processing & Analysis — Attribute Queries",
+        question: "Which attribute query will select all parcels with an area smaller than 800 square meters?",
+        options: [
+          "Area Is Equal To 800",
+          "Area Is Less Than Or Equal To 800",
+          "Area Is Less Than 800",
+          "Area Is Below Average 800"
+        ],
+        answer: 2,
+        explanation: "'Smaller than 800' means strictly less than — it excludes 800 exactly. The correct query is 'Area Is Less Than 800'. 'Less Than Or Equal To 800' would also include parcels of exactly 800 square meters."
+      },
+      {
+        domain: "Processing & Analysis — Attribute Queries",
+        question: "A retail analyst wants to find all credit card transactions with a sale amount of at least $500. Which query is correct?",
+        options: [
+          "PymtType Is Equal To Credit AND SaleAmount Is Greater Than Or Equal To 500",
+          "PymtType Is Equal To Cash AND SaleAmount Is Greater Than 499",
+          "PymtType Is Not Equal To Cash AND SaleAmount Is Less Than Or Equal To 500",
+          "PymtType Is Equal To Credit AND SaleAmount Is Less Than 499"
+        ],
+        answer: 0,
+        explanation: "The query needs two conditions: payment type must be 'Credit' AND sale amount must be at least $500 (Greater Than Or Equal To 500). The AND operator requires both conditions to be true simultaneously."
+      },
+      {
+        domain: "Processing & Analysis — Attribute Queries",
+        question: "A priority field in a warranty system contains values: High, Medium or Low. Which data type is associated with this field?",
+        options: [
+          "Double",
+          "Object identifier",
+          "Number",
+          "Text"
+        ],
+        answer: 3,
+        explanation: "The values High, Medium and Low are words (strings), not numbers. Any field storing text values — even if they represent categories or rankings — uses the Text data type. Number/Double are for numeric values."
+      },
+      {
+        domain: "Processing & Analysis — Attribute Queries",
+        question: "Looking at a parks attribute table with columns: Object ID, Park name, Management contact, Daily operating hours, Location, Description — which fields represent feature attributes related to the parks?",
+        options: [
+          "Object ID, park name, management contact, daily operating hours, location",
+          "Park name, daily operating hours, location, description",
+          "Park name, management contact, daily operating hours, location",
+          "All fields including Object ID are feature attributes"
+        ],
+        answer: 1,
+        explanation: "Feature attributes describe characteristics of the park itself: its name, operating hours, location and description. Object ID is a system-generated identifier, not a descriptive attribute. Management contact is also a valid attribute — but the correct answer per the course is park name, daily operating hours, location and description."
+      },
 
-  // LABELING — SETTINGS
-  {
-    domain: "Mapping & Visualization — Labeling",
-    question: "Which label setting only allows changes to how a label appears, not how it is placed on the map?",
-    options: [
-      "Weights",
-      "Effects",
-      "Classes",
-      "Scale settings"
-    ],
-    answer: 1,
-    explanation: "The Effects setting adds visual effects to labels — shadows, halos, callouts — that only change how the label looks, not where it is placed. Settings like Position, Classes and Weights all influence label placement."
-  },
-  {
-    domain: "Mapping & Visualization — Labeling",
-    question: "For which two feature types should you use sans-serif fonts when labeling a map?",
-    options: [
-      "Rivers and lakes",
-      "Roads and cities",
-      "Mountain ranges and rivers",
-      "Cities and lakes"
-    ],
-    answer: 1,
-    explanation: "According to cartographic conventions, sans-serif fonts are used for roads and cities (man-made features). Serif or italic fonts are typically used for natural features like rivers, lakes and mountain ranges."
-  },
-  {
-    domain: "Mapping & Visualization — Labeling",
-    question: "What is one label property you cannot customize using the Standard Label Engine in ArcGIS Pro?",
-    options: [
-      "Size",
-      "Minimum and maximum scales",
-      "Halos",
-      "Stacking"
-    ],
-    answer: 3,
-    explanation: "Stacking (placing words above each other to save space) is a fitting strategy tool available only in the Maplex Label Engine — the default and more advanced engine. The Standard Label Engine does not support stacking."
-  },
-  {
-    domain: "Mapping & Visualization — Labeling",
-    question: "Which labeling engine is set as the default in ArcGIS Pro and provides additional fitting strategy tools?",
-    options: [
-      "Standard Label Engine",
-      "Maplex Label Engine",
-      "ArcMap Label Engine",
-      "Dynamic Label Engine"
-    ],
-    answer: 1,
-    explanation: "The Maplex Label Engine is the default in ArcGIS Pro. It offers all Standard Label Engine tools (position, conflict resolution) plus additional fitting strategy tools like Stack, Overrun and Abbreviate."
-  },
-  {
-    domain: "Mapping & Visualization — Labeling",
-    question: "Which label placement guideline is correct for area features?",
-    options: [
-      "Labels should always be placed outside the polygon boundary",
-      "There is no preferred placement as long as the label is near the feature",
-      "Labels should appear within the feature when possible, even if words must be stacked",
-      "Labels should follow the outline of the polygon boundary"
-    ],
-    answer: 2,
-    explanation: "For area (polygon) features, labels should appear within the feature whenever possible — even if the words need to be stacked vertically to fit. This clearly associates the label with the feature it describes."
-  },
-  {
-    domain: "Mapping & Visualization — Labeling",
-    question: "What is the difference between conflict resolution tools and fitting strategy tools in ArcGIS Pro labeling?",
-    options: [
-      "Conflict resolution fits labels into tight spaces; fitting strategy removes duplicate labels",
-      "Conflict resolution only applies to line features; fitting strategy applies to all feature types",
-      "They are identical tools with different names in different label engines",
-      "Conflict resolution prevents labels from blocking other labels; fitting strategy changes the space labels occupy to ensure they get placed"
-    ],
-    answer: 3,
-    explanation: "Conflict resolution reduces conflicts by removing or prioritizing labels that would overlap. Fitting strategy (Maplex only) changes how labels are physically shaped — stacking, abbreviating, overrunning boundaries — to make them fit without being removed."
-  },
-  {
-    domain: "Mapping & Visualization — Labeling",
-    question: "Which four map features are known to have typical or standard label properties?",
-    options: [
-      "Streets, stores, light rail lines, cities",
-      "Rivers, lakes, stores, mountain ranges",
-      "Streets or roads, rivers, cities or towns, mountain ranges",
-      "Roads, rivers, lakes, light rail lines"
-    ],
-    answer: 2,
-    explanation: "The four features with well-established standard label properties are: streets or roads, rivers, cities or towns and mountain ranges. Each has specific font type, size, placement and style conventions in cartographic practice."
-  },
+      // LABELING — SETTINGS
+      {
+        domain: "Mapping & Visualization — Labeling",
+        question: "Which label setting only allows changes to how a label appears, not how it is placed on the map?",
+        options: [
+          "Weights",
+          "Effects",
+          "Classes",
+          "Scale settings"
+        ],
+        answer: 1,
+        explanation: "The Effects setting adds visual effects to labels — shadows, halos, callouts — that only change how the label looks, not where it is placed. Settings like Position, Classes and Weights all influence label placement."
+      },
+      {
+        domain: "Mapping & Visualization — Labeling",
+        question: "For which two feature types should you use sans-serif fonts when labeling a map?",
+        options: [
+          "Rivers and lakes",
+          "Roads and cities",
+          "Mountain ranges and rivers",
+          "Cities and lakes"
+        ],
+        answer: 1,
+        explanation: "According to cartographic conventions, sans-serif fonts are used for roads and cities (man-made features). Serif or italic fonts are typically used for natural features like rivers, lakes and mountain ranges."
+      },
+      {
+        domain: "Mapping & Visualization — Labeling",
+        question: "What is one label property you cannot customize using the Standard Label Engine in ArcGIS Pro?",
+        options: [
+          "Size",
+          "Minimum and maximum scales",
+          "Halos",
+          "Stacking"
+        ],
+        answer: 3,
+        explanation: "Stacking (placing words above each other to save space) is a fitting strategy tool available only in the Maplex Label Engine — the default and more advanced engine. The Standard Label Engine does not support stacking."
+      },
+      {
+        domain: "Mapping & Visualization — Labeling",
+        question: "Which labeling engine is set as the default in ArcGIS Pro and provides additional fitting strategy tools?",
+        options: [
+          "Standard Label Engine",
+          "Maplex Label Engine",
+          "ArcMap Label Engine",
+          "Dynamic Label Engine"
+        ],
+        answer: 1,
+        explanation: "The Maplex Label Engine is the default in ArcGIS Pro. It offers all Standard Label Engine tools (position, conflict resolution) plus additional fitting strategy tools like Stack, Overrun and Abbreviate."
+      },
+      {
+        domain: "Mapping & Visualization — Labeling",
+        question: "Which label placement guideline is correct for area features?",
+        options: [
+          "Labels should always be placed outside the polygon boundary",
+          "There is no preferred placement as long as the label is near the feature",
+          "Labels should appear within the feature when possible, even if words must be stacked",
+          "Labels should follow the outline of the polygon boundary"
+        ],
+        answer: 2,
+        explanation: "For area (polygon) features, labels should appear within the feature whenever possible — even if the words need to be stacked vertically to fit. This clearly associates the label with the feature it describes."
+      },
+      {
+        domain: "Mapping & Visualization — Labeling",
+        question: "What is the difference between conflict resolution tools and fitting strategy tools in ArcGIS Pro labeling?",
+        options: [
+          "Conflict resolution fits labels into tight spaces; fitting strategy removes duplicate labels",
+          "Conflict resolution only applies to line features; fitting strategy applies to all feature types",
+          "They are identical tools with different names in different label engines",
+          "Conflict resolution prevents labels from blocking other labels; fitting strategy changes the space labels occupy to ensure they get placed"
+        ],
+        answer: 3,
+        explanation: "Conflict resolution reduces conflicts by removing or prioritizing labels that would overlap. Fitting strategy (Maplex only) changes how labels are physically shaped — stacking, abbreviating, overrunning boundaries — to make them fit without being removed."
+      },
+      {
+        domain: "Mapping & Visualization — Labeling",
+        question: "Which four map features are known to have typical or standard label properties?",
+        options: [
+          "Streets, stores, light rail lines, cities",
+          "Rivers, lakes, stores, mountain ranges",
+          "Streets or roads, rivers, cities or towns, mountain ranges",
+          "Roads, rivers, lakes, light rail lines"
+        ],
+        answer: 2,
+        explanation: "The four features with well-established standard label properties are: streets or roads, rivers, cities or towns and mountain ranges. Each has specific font type, size, placement and style conventions in cartographic practice."
+      },
 
-  // SPATIAL ANALYSIS
-  {
-    domain: "Processing & Analysis — Spatial Analysis",
-    question: "Which two statements best describe spatial analysis?",
-    options: [
-      "Spatial analysis is a collection of GIS tools used exclusively in ArcGIS Pro",
-      "Spatial analysis uses data to solve problems and make decisions, and examines spatial data to understand the world",
-      "Spatial analysis is the act of visualizing spatial data on a map",
-      "Spatial analysis is only applicable to vector datasets, not raster"
-    ],
-    answer: 1,
-    explanation: "Spatial analysis uses data to solve real-world problems and make decisions. It also encompasses examining spatial data to understand patterns, relationships and phenomena in the world. It is not limited to a specific software or data type."
-  },
-  {
-    domain: "Processing & Analysis — Spatial Analysis",
-    question: "Which of the following is a benefit of performing spatial analysis?",
-    options: [
-      "Decreases productivity and increases operational costs",
-      "Reduces competitive advantage for organizations",
-      "Protects citizens, increases revenue and improves customer service",
-      "Limits access to geographic data for non-specialists"
-    ],
-    answer: 2,
-    explanation: "Spatial analysis benefits include protecting citizens (better emergency response, risk mapping), increasing revenue (optimizing business locations, routes) and improving customer service (faster delivery, better resource allocation)."
-  }
-];
+      // SPATIAL ANALYSIS
+      {
+        domain: "Processing & Analysis — Spatial Analysis",
+        question: "Which two statements best describe spatial analysis?",
+        options: [
+          "Spatial analysis is a collection of GIS tools used exclusively in ArcGIS Pro",
+          "Spatial analysis uses data to solve problems and make decisions, and examines spatial data to understand the world",
+          "Spatial analysis is the act of visualizing spatial data on a map",
+          "Spatial analysis is only applicable to vector datasets, not raster"
+        ],
+        answer: 1,
+        explanation: "Spatial analysis uses data to solve real-world problems and make decisions. It also encompasses examining spatial data to understand patterns, relationships and phenomena in the world. It is not limited to a specific software or data type."
+      },
+      {
+        domain: "Processing & Analysis — Spatial Analysis",
+        question: "Which of the following is a benefit of performing spatial analysis?",
+        options: [
+          "Decreases productivity and increases operational costs",
+          "Reduces competitive advantage for organizations",
+          "Protects citizens, increases revenue and improves customer service",
+          "Limits access to geographic data for non-specialists"
+        ],
+        answer: 2,
+        explanation: "Spatial analysis benefits include protecting citizens (better emergency response, risk mapping), increasing revenue (optimizing business locations, routes) and improving customer service (faster delivery, better resource allocation)."
+      }
+    ];
 
-let current = 0;
-let score = 0;
-let answered = false;
+    let current = 0;
+    let score = 0;
+    let answered = false;
+    let shuffledAnswer = 0;
 
-function loadQuestion() {
-  const q = questions[current];
-  answered = false;
-  document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
-  document.getElementById('question-text').textContent = q.question;
-  const letters = ['A', 'B', 'C', 'D'];
-  const list = document.getElementById('options-list');
-  list.innerHTML = '';
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'option';
-    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
-    btn.onclick = () => selectAnswer(i);
-    list.appendChild(btn);
-  });
-  const expl = document.getElementById('explanation');
-  expl.textContent = '';
-  expl.classList.remove('visible');
-  const next = document.getElementById('btn-next');
-  next.classList.remove('visible');
-  next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
-  const pct = ((current + 1) / questions.length) * 100;
-  document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
-  document.getElementById('progress-fill').style.width = pct + '%';
-}
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
-function selectAnswer(index) {
-  if (answered) return;
-  answered = true;
-  const q = questions[current];
-  const options = document.querySelectorAll('.option');
-  options.forEach(btn => btn.disabled = true);
-  options[q.answer].classList.add('correct');
-  if (index === q.answer) { score++; } else { options[index].classList.add('wrong'); }
-  const expl = document.getElementById('explanation');
-  expl.textContent = q.explanation;
-  expl.classList.add('visible');
-  document.getElementById('btn-next').classList.add('visible');
-}
+    function loadQuestion() {
+      const q = questions[current];
+      answered = false;
+      document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
+      document.getElementById('question-text').textContent = q.question;
+      const indices = shuffle([0, 1, 2, 3]);
+      shuffledAnswer = indices.indexOf(q.answer);
+      const letters = ['A', 'B', 'C', 'D'];
+      const list = document.getElementById('options-list');
+      list.innerHTML = '';
+      indices.forEach((origIdx, displayIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.innerHTML = `<span class="option-letter">${letters[displayIdx]}</span><span>${q.options[origIdx]}</span>`;
+        btn.onclick = () => selectAnswer(displayIdx);
+        list.appendChild(btn);
+      });
+      const expl = document.getElementById('explanation');
+      expl.textContent = '';
+      expl.classList.remove('visible');
+      const next = document.getElementById('btn-next');
+      next.classList.remove('visible');
+      next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
+      const pct = ((current + 1) / questions.length) * 100;
+      document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
+      document.getElementById('progress-fill').style.width = pct + '%';
+    }
 
-function nextQuestion() {
-  current++;
-  if (current < questions.length) { loadQuestion(); } else { showResult(); }
-}
+    function selectAnswer(index) {
+      if (answered) return;
+      answered = true;
+      const q = questions[current];
+      const options = document.querySelectorAll('.option');
+      options.forEach(btn => btn.disabled = true);
+      options[shuffledAnswer].classList.add('correct');
+      if (index === shuffledAnswer) { score++; } else { options[index].classList.add('wrong'); }
+      const expl = document.getElementById('explanation');
+      expl.textContent = q.explanation;
+      expl.classList.add('visible');
+      document.getElementById('btn-next').classList.add('visible');
+    }
 
-function showResult() {
-  document.getElementById('quiz-screen').style.display = 'none';
-  const rs = document.getElementById('result-screen');
-  rs.style.display = 'block';
-  const pct = Math.round((score / questions.length) * 100);
-  document.getElementById('result-score').textContent = `${score}/${questions.length}`;
-  document.getElementById('result-sub').textContent =
-    pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
-    pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
-    `${pct}% — À retravailler avant l'exam.`;
-}
+    function nextQuestion() {
+      current++;
+      if (current < questions.length) { loadQuestion(); } else { showResult(); }
+    }
 
-function restart() {
-  current = 0; score = 0;
-  document.getElementById('result-screen').style.display = 'none';
-  document.getElementById('quiz-screen').style.display = 'block';
-  loadQuestion();
-}
+    function showResult() {
+      document.getElementById('quiz-screen').style.display = 'none';
+      const rs = document.getElementById('result-screen');
+      rs.style.display = 'block';
+      const pct = Math.round((score / questions.length) * 100);
+      document.getElementById('result-score').textContent = `${score}/${questions.length}`;
+      document.getElementById('result-sub').textContent =
+        pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
+          pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
+            `${pct}% — À retravailler avant l'exam.`;
+    }
 
-loadQuestion();
-</script>
+    function restart() {
+      current = 0; score = 0;
+      document.getElementById('result-screen').style.display = 'none';
+      document.getElementById('quiz-screen').style.display = 'block';
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
 </body>
+
 </html>

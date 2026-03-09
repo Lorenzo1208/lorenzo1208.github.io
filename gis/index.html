@@ -92,7 +92,7 @@
       margin: 0 auto;
     }
 
-    #quiz-screen {}
+
 
     .question-meta {
       font-size: 0.65rem;
@@ -695,6 +695,15 @@
     let current = 0;
     let score = 0;
     let answered = false;
+    let shuffledAnswer = 0;
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
     function loadQuestion() {
       const q = questions[current];
@@ -703,15 +712,17 @@
       document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
       document.getElementById('question-text').textContent = q.question;
 
+      const indices = shuffle([0, 1, 2, 3]);
+      shuffledAnswer = indices.indexOf(q.answer);
       const letters = ['A', 'B', 'C', 'D'];
       const list = document.getElementById('options-list');
       list.innerHTML = '';
 
-      q.options.forEach((opt, i) => {
+      indices.forEach((origIdx, displayIdx) => {
         const btn = document.createElement('button');
         btn.className = 'option';
-        btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
-        btn.onclick = () => selectAnswer(i);
+        btn.innerHTML = `<span class="option-letter">${letters[displayIdx]}</span><span>${q.options[origIdx]}</span>`;
+        btn.onclick = () => selectAnswer(displayIdx);
         list.appendChild(btn);
       });
 
@@ -736,9 +747,9 @@
       const options = document.querySelectorAll('.option');
 
       options.forEach(btn => btn.disabled = true);
-      options[q.answer].classList.add('correct');
+      options[shuffledAnswer].classList.add('correct');
 
-      if (index === q.answer) {
+      if (index === shuffledAnswer) {
         score++;
       } else {
         options[index].classList.add('wrong');
