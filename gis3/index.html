@@ -1,438 +1,831 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz GIS — Série 3</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
-    <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz GIS — Série 3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        :root {
-            --bg: #0d0d0d;
-            --surface: #161616;
-            --border: #2a2a2a;
-            --accent: #c8f060;
-            --accent-dim: rgba(200, 240, 96, 0.1);
-            --text: #f0f0f0;
-            --muted: #666;
-            --wrong: #ff5f5f;
-            --wrong-dim: rgba(255, 95, 95, 0.1);
-        }
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --accent: #c8f060;
+      --accent-dim: rgba(200,240,96,0.1);
+      --text: #f0f0f0;
+      --muted: #666;
+      --wrong: #ff5f5f;
+      --wrong-dim: rgba(255,95,95,0.1);
+    }
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'DM Mono', monospace;
-            min-height: 100vh;
-            padding: 3rem 2rem;
-        }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      padding: 3rem 2rem;
+    }
 
-        header {
-            max-width: 680px;
-            margin: 0 auto 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1.5rem;
-        }
+    header {
+      max-width: 680px;
+      margin: 0 auto 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
 
-        .back {
-            font-size: 0.72rem;
-            color: var(--muted);
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: color 0.15s;
-        }
+    .back {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.15s;
+    }
+    .back:hover { color: var(--accent); }
 
-        .back:hover {
-            color: var(--accent);
-        }
+    .header-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+    }
 
-        .header-title {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 1rem;
-        }
+    .progress-wrap {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-align: right;
+    }
 
-        .progress-wrap {
-            font-size: 0.65rem;
-            color: var(--muted);
-            text-align: right;
-        }
+    .progress-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      margin-top: 0.4rem;
+      width: 80px;
+      margin-left: auto;
+    }
 
-        .progress-bar {
-            height: 2px;
-            background: var(--border);
-            border-radius: 1px;
-            margin-top: 0.4rem;
-            width: 80px;
-            margin-left: auto;
-        }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+      transition: width 0.3s ease;
+    }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            border-radius: 1px;
-            transition: width 0.3s ease;
-        }
+    main { max-width: 680px; margin: 0 auto; }
 
-        main {
-            max-width: 680px;
-            margin: 0 auto;
-        }
+    .question-meta {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
 
-        .question-meta {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--muted);
-            margin-bottom: 1.2rem;
-        }
+    .question-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      color: var(--text);
+    }
 
-        .question-text {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 1.15rem;
-            line-height: 1.5;
-            margin-bottom: 2rem;
-            color: var(--text);
-        }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
 
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 1px;
-            background: var(--border);
-            border: 1px solid var(--border);
-            margin-bottom: 2rem;
-        }
+    .option {
+      background: var(--surface);
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: background 0.12s;
+      border: none;
+      text-align: left;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      width: 100%;
+    }
 
-        .option {
-            background: var(--surface);
-            padding: 1.1rem 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            cursor: pointer;
-            transition: background 0.12s;
-            border: none;
-            text-align: left;
-            color: var(--text);
-            font-family: 'DM Mono', monospace;
-            font-size: 0.85rem;
-            width: 100%;
-        }
+    .option:hover:not(:disabled) { background: #1e1e1e; }
 
-        .option:hover:not(:disabled) {
-            background: #1e1e1e;
-        }
+    .option-letter {
+      font-size: 0.65rem;
+      color: var(--muted);
+      min-width: 1.2rem;
+      text-transform: uppercase;
+    }
 
-        .option-letter {
-            font-size: 0.65rem;
-            color: var(--muted);
-            min-width: 1.2rem;
-            text-transform: uppercase;
-        }
+    .option.correct {
+      background: var(--accent-dim);
+      border-left: 2px solid var(--accent);
+    }
+    .option.correct .option-letter { color: var(--accent); }
 
-        .option.correct {
-            background: var(--accent-dim);
-            border-left: 2px solid var(--accent);
-        }
+    .option.wrong {
+      background: var(--wrong-dim);
+      border-left: 2px solid var(--wrong);
+    }
+    .option.wrong .option-letter { color: var(--wrong); }
 
-        .option.correct .option-letter {
-            color: var(--accent);
-        }
+    .option:disabled { cursor: default; }
 
-        .option.wrong {
-            background: var(--wrong-dim);
-            border-left: 2px solid var(--wrong);
-        }
+    .explanation {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 1rem 1.2rem;
+      border-left: 2px solid var(--border);
+      margin-bottom: 2rem;
+      display: none;
+    }
+    .explanation.visible { display: block; }
 
-        .option.wrong .option-letter {
-            color: var(--wrong);
-        }
+    .btn-next {
+      background: var(--accent);
+      color: #0d0d0d;
+      border: none;
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      display: none;
+      transition: opacity 0.15s;
+    }
+    .btn-next:hover { opacity: 0.85; }
+    .btn-next.visible { display: inline-block; }
 
-        .option:disabled {
-            cursor: default;
-        }
+    #result-screen {
+      display: none;
+      text-align: left;
+    }
 
-        .explanation {
-            font-size: 0.78rem;
-            color: var(--muted);
-            line-height: 1.6;
-            padding: 1rem 1.2rem;
-            border-left: 2px solid var(--border);
-            margin-bottom: 2rem;
-            display: none;
-        }
+    .result-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
 
-        .explanation.visible {
-            display: block;
-        }
+    .result-score {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 4rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
 
-        .btn-next {
-            background: var(--accent);
-            color: #0d0d0d;
-            border: none;
-            padding: 0.85rem 2rem;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            letter-spacing: 0.05em;
-            display: none;
-            transition: opacity 0.15s;
-        }
+    .result-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 3rem;
+    }
 
-        .btn-next:hover {
-            opacity: 0.85;
-        }
+    .result-breakdown {
+      background: var(--border);
+      height: 1px;
+      margin-bottom: 2rem;
+    }
 
-        .btn-next.visible {
-            display: inline-block;
-        }
+    .btn-retry {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.15s;
+      margin-right: 1rem;
+    }
+    .btn-retry:hover { background: var(--accent-dim); }
 
-        #result-screen {
-            display: none;
-            text-align: left;
-        }
-
-        .result-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--muted);
-            margin-bottom: 1rem;
-        }
-
-        .result-score {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 4rem;
-            color: var(--accent);
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-sub {
-            font-size: 0.8rem;
-            color: var(--muted);
-            margin-bottom: 3rem;
-        }
-
-        .result-breakdown {
-            background: var(--border);
-            height: 1px;
-            margin-bottom: 2rem;
-        }
-
-        .btn-retry {
-            background: transparent;
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            padding: 0.85rem 2rem;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            letter-spacing: 0.05em;
-            transition: background 0.15s;
-            margin-right: 1rem;
-        }
-
-        .btn-retry:hover {
-            background: var(--accent-dim);
-        }
-
-        .btn-hub {
-            font-size: 0.72rem;
-            color: var(--muted);
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: color 0.15s;
-        }
-
-        .btn-hub:hover {
-            color: var(--text);
-        }
-    </style>
+    .btn-hub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.15s;
+    }
+    .btn-hub:hover { color: var(--text); }
+  </style>
 </head>
-
 <body>
 
-    <header>
-        <a class="back" href="../">← Hub</a>
-        <div class="header-title">GIS Foundation — Série 3</div>
-        <div class="progress-wrap">
-            <span id="progress-text">1 / 3</span>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill" style="width:33.33%"></div>
-            </div>
-        </div>
-    </header>
+<header>
+  <a class="back" href="../">← Hub</a>
+  <div class="header-title">GIS Foundation — Série 3</div>
+  <div class="progress-wrap">
+    <span id="progress-text">1 / 35</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:2.86%"></div></div>
+  </div>
+</header>
 
-    <main>
-        <div id="quiz-screen">
-            <div class="question-meta" id="question-domain">Domaine · —</div>
-            <div class="question-text" id="question-text"></div>
-            <div class="options" id="options-list"></div>
-            <div class="explanation" id="explanation"></div>
-            <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
-        </div>
+<main>
+  <div id="quiz-screen">
+    <div class="question-meta" id="question-domain">Domaine · —</div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-list"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
+  </div>
 
-        <div id="result-screen">
-            <div class="result-label">— Résultat final</div>
-            <div class="result-score" id="result-score"></div>
-            <div class="result-sub" id="result-sub"></div>
-            <div class="result-breakdown"></div>
-            <button class="btn-retry" onclick="restart()">Recommencer</button>
-            <a class="btn-hub" href="../">← Retour au hub</a>
-        </div>
-    </main>
+  <div id="result-screen">
+    <div class="result-label">— Résultat final</div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-sub" id="result-sub"></div>
+    <div class="result-breakdown"></div>
+    <button class="btn-retry" onclick="restart()">Recommencer</button>
+    <a class="btn-hub" href="../">← Retour au hub</a>
+  </div>
+</main>
 
-    <script>
-        const questions = [
-            {
-                domain: "Coordinate Systems",
-                question: "Quelle est la différence fondamentale entre un système de coordonnées géographiques (GCS) et un système de coordonnées projetées (PCS) ?",
-                options: [
-                    "Un GCS utilise des mètres, un PCS utilise des degrés",
-                    "Un GCS utilise des degrés de latitude/longitude sur une sphère, un PCS représente la surface sur un plan en unités linéaires",
-                    "Un GCS est uniquement utilisé pour les données raster",
-                    "Un PCS est basé sur le datum WGS84 exclusivement"
-                ],
-                answer: 1,
-                explanation: "Un GCS (Geographic Coordinate System) exprime les positions en degrés (latitude/longitude) sur un modèle ellipsoïdal de la Terre. Un PCS (Projected Coordinate System) applique une projection mathématique pour \"aplatir\" la surface terrestre sur un plan 2D, utilisant des unités linéaires comme les mètres ou les pieds."
-            },
-            {
-                domain: "Spatial Analysis",
-                question: "Dans ArcGIS, quel outil utilises-tu pour identifier tous les points situés à moins de 500 mètres d'une rivière ?",
-                options: [
-                    "Clip",
-                    "Select By Location with Buffer",
-                    "Buffer puis Spatial Join",
-                    "Intersect"
-                ],
-                answer: 2,
-                explanation: "La démarche correcte est de créer un Buffer de 500 m autour de la rivière, puis d'utiliser un Spatial Join (ou Select By Location) pour identifier les points qui tombent à l'intérieur de ce buffer. Clip découpe une couche par une autre sans créer de zone tampon. Intersect garde uniquement les zones qui se chevauchent géographiquement."
-            },
-            {
-                domain: "Remote Sensing",
-                question: "L'indice NDVI (Normalized Difference Vegetation Index) est calculé à partir de quelles bandes spectrales ?",
-                options: [
-                    "Rouge et Bleu",
-                    "Vert et Infrarouge proche",
-                    "Rouge et Infrarouge proche",
-                    "Infrarouge moyen et Thermal"
-                ],
-                answer: 2,
-                explanation: "Le NDVI est calculé selon la formule (NIR - Red) / (NIR + Red), où NIR est la bande infrarouge proche et Red est la bande rouge. Les plantes saines absorbent fortement la lumière rouge (photosynthèse) et réfléchissent fortement dans le NIR. Un NDVI proche de 1 indique une végétation dense et saine."
-            }
-        ];
+<script>
+const questions = [
 
-        let current = 0;
-        let score = 0;
-        let answered = false;
+  // GIS CAPABILITIES
+  {
+    domain: "Data Discovery — GIS Capabilities",
+    question: "A scientist uses tools based on spatial algorithms to identify trends and predict where an invasive plant species may grow. Which GIS capability is being used?",
+    options: [
+      "Real-time GIS",
+      "Field operations",
+      "Spatial analytics",
+      "Data collection and management"
+    ],
+    answer: 2,
+    explanation: "Spatial analytics allows users to move beyond visual exploration and use spatial algorithms to identify trends, patterns and relationships — such as predicting future species distribution."
+  },
+  {
+    domain: "Data Discovery — GIS Capabilities",
+    question: "A utility worker collects information about a water outage on a mobile device connected to a central work order system. Which GIS capability does this describe?",
+    options: [
+      "Field operations",
+      "Spatial analytics",
+      "Real-time GIS",
+      "3D GIS"
+    ],
+    answer: 0,
+    explanation: "Field operations enable office staff and fieldworkers to access the same authoritative data sources via mobile devices, reducing paper-based methods and increasing efficiency."
+  },
+  {
+    domain: "Data Discovery — GIS Capabilities",
+    question: "A dispatcher analyzes a map with current ambulance locations to dispatch the closest unit to a car accident. Which GIS capability is this?",
+    options: [
+      "Spatial analytics",
+      "Mapping and visualization",
+      "Field operations",
+      "Real-time GIS"
+    ],
+    answer: 3,
+    explanation: "Real-time GIS monitors and displays data obtained from sensors or devices at specific locations, enabling individuals to make real-time decisions — like dispatching the nearest ambulance."
+  },
+  {
+    domain: "Data Discovery — GIS Capabilities",
+    question: "A planner uses a 3D building model and the sun's position to determine how shadows from a new building might affect surrounding buildings. Which GIS capability is this?",
+    options: [
+      "3D GIS",
+      "Imagery and remote sensing",
+      "Real-time GIS",
+      "Spatial analytics"
+    ],
+    answer: 0,
+    explanation: "3D GIS transforms 2D data into 3D models, bringing real-world context to maps and providing new ways to add dimension to data for visualization and analysis."
+  },
+  {
+    domain: "Data Discovery — GIS Capabilities",
+    question: "A forester collects imagery of a forest area and extracts land-cover classifications to determine vegetation types. Which GIS capability does this represent?",
+    options: [
+      "Data collection and management",
+      "Mapping and visualization",
+      "Imagery and remote sensing",
+      "Field operations"
+    ],
+    answer: 2,
+    explanation: "Imagery and remote sensing provides tools and workflows to extract information from imagery and remotely sensed data — such as classifying land cover from aerial or satellite imagery."
+  },
 
-        function loadQuestion() {
-            const q = questions[current];
-            answered = false;
+  // TYPES OF WEB LAYERS
+  {
+    domain: "Content Management & Sharing — Layer Types",
+    question: "Which layer type in ArcGIS Online is primarily used as an operational layer and can display pop-ups with attribute information?",
+    options: [
+      "Tile layer",
+      "Feature layer",
+      "Map image layer",
+      "Elevation layer"
+    ],
+    answer: 1,
+    explanation: "Feature layers are groupings of geographic features (buildings, roads, parcels) represented as points, lines or polygons. They are used as operational layers and can display pop-ups with attribute information."
+  },
+  {
+    domain: "Content Management & Sharing — Layer Types",
+    question: "Which layer type is a collection of pre-rendered images intended for reference and often used as basemap layers?",
+    options: [
+      "Feature layer",
+      "Scene layer",
+      "Table",
+      "Tile layer"
+    ],
+    answer: 3,
+    explanation: "Tile layers are collections of pre-rendered or quick-to-render vector images that can be rapidly displayed. They provide context and reference for other layers and are often used as basemaps."
+  },
+  {
+    domain: "Content Management & Sharing — Layer Types",
+    question: "An imagery layer in ArcGIS Online is best described as:",
+    options: [
+      "A collection of 3D feature objects and elevation values",
+      "A collection of rows and columns representing single entities",
+      "A collection of map cartography based on raster data captured by remote sensing devices",
+      "A collection of pre-rendered vector tiles for basemap display"
+    ],
+    answer: 2,
+    explanation: "An imagery layer is based on raster data — a grid of cells commonly used to store information captured by remote sensing devices. They can be displayed dynamically or as cached image tiles."
+  },
+  {
+    domain: "Content Management & Sharing — Layer Types",
+    question: "You need to create a layer that includes pop-ups to display attribute information for use in a web map. Which layer type should you use?",
+    options: [
+      "Tile layer",
+      "Imagery layer",
+      "Feature layer",
+      "Map image layer"
+    ],
+    answer: 2,
+    explanation: "Feature layers support pop-ups that display attribute information for each feature. Map image and tile layers do not support editable pop-ups in the same way. Feature layers are the correct choice for interactive attribute display."
+  },
+  {
+    domain: "Content Management & Sharing — Layer Types",
+    question: "In a web map, which layer type can you edit and analyze?",
+    options: [
+      "Tile layer",
+      "Operational layer",
+      "All layers",
+      "Basemap layer"
+    ],
+    answer: 1,
+    explanation: "Operational layers are drawn on top of the basemap. You can interact with them by viewing attribution information, editing features and performing analysis. Basemap and tile layers are static reference layers."
+  },
+  {
+    domain: "Content Management & Sharing — Layer Types",
+    question: "What is a Scene layer in ArcGIS Online?",
+    options: [
+      "A layer used exclusively for basemap display",
+      "A collection of 3D feature objects and elevation values including point clouds and building types",
+      "A raster layer displaying satellite imagery",
+      "A table of rows and columns without a spatial component"
+    ],
+    answer: 1,
+    explanation: "A scene layer is a collection of 3D feature objects and elevation values. Scene layer types include point, 3D object, integrated mesh, point cloud and building — used in 3D web scenes."
+  },
 
-            document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
-            document.getElementById('question-text').textContent = q.question;
+  // BASEMAP vs OPERATIONAL
+  {
+    domain: "Mapping & Visualization — Layers",
+    question: "What is the primary function of a basemap layer?",
+    options: [
+      "To store editable feature data for field operations",
+      "To display analysis results from geoprocessing tools",
+      "To provide static geographic context such as imagery, roads or boundaries beneath operational layers",
+      "To hold attribute tables linked to operational layers"
+    ],
+    answer: 2,
+    explanation: "Basemap layers are static tiled layers — imagery, territorial boundaries, roads — that provide geographic context. They sit beneath operational layers and are not edited or analyzed directly."
+  },
+  {
+    domain: "Mapping & Visualization — Layers",
+    question: "In a map of the Lewis and Clark Historic Trail, the trail line layer is drawn on top of a topographic basemap. What type of layer is the trail?",
+    options: [
+      "Basemap layer",
+      "Tile layer",
+      "Elevation layer",
+      "Operational layer"
+    ],
+    answer: 3,
+    explanation: "The trail layer is an operational layer — it contains the actual data being communicated and sits on top of the basemap. Operational layers can include features or imagery and can be interacted with."
+  },
+  {
+    domain: "Mapping & Visualization — Layers",
+    question: "One of your operational layers is difficult to see because the basemap includes too much detail. What should you do?",
+    options: [
+      "Remove the operational layer and recreate it",
+      "Remove the basemap entirely from the map",
+      "Change the basemap to something simpler",
+      "Change the map extent to zoom in further"
+    ],
+    answer: 2,
+    explanation: "When an operational layer is hard to read against the basemap, switching to a simpler basemap (like Light Gray Canvas) reduces visual noise and makes the operational data stand out. You never remove the basemap entirely."
+  },
 
-            const letters = ['A', 'B', 'C', 'D'];
-            const list = document.getElementById('options-list');
-            list.innerHTML = '';
+  // SHARING LEVELS
+  {
+    domain: "Content Management & Sharing — Sharing",
+    question: "In ArcGIS Online, what are the four sharing levels available for content, from most to least restrictive?",
+    options: [
+      "Admin, Publisher, User, Viewer",
+      "Private, Group, Organization, Public",
+      "Local, Regional, National, Global",
+      "Draft, Review, Approved, Published"
+    ],
+    answer: 1,
+    explanation: "The four sharing levels in ArcGIS Online are: Private (owner only), Group (group members), Organization (all org members), and Public (everyone on the internet). They are represented as concentric circles from most to least restrictive."
+  },
+  {
+    domain: "Content Management & Sharing — Sharing",
+    question: "Which sharing level allows only you and your administrator to access an item in ArcGIS Online?",
+    options: [
+      "Group",
+      "Organization",
+      "Public",
+      "Private"
+    ],
+    answer: 3,
+    explanation: "Private is the most restrictive sharing level. Only the item owner and the organization administrator can access private content. It is the default when you first create or upload content."
+  },
+  {
+    domain: "Content Management & Sharing — Sharing",
+    question: "You want to share a web scene in a blog post accessible to anyone on the internet. Which sharing level should you choose?",
+    options: [
+      "Public",
+      "Organization",
+      "Group",
+      "Private"
+    ],
+    answer: 0,
+    explanation: "Public sharing makes content accessible to anyone on the internet without requiring an ArcGIS account. This is the correct level for embedding content in a public blog post."
+  },
+  {
+    domain: "Content Management & Sharing — Sharing",
+    question: "A map references two layers: one shared to the Marketing group and one shared publicly. Who can open the map and view all referenced layers?",
+    options: [
+      "The general public",
+      "Members of the Marketing group",
+      "Only the analyst who created it",
+      "Members of the organizational site"
+    ],
+    answer: 1,
+    explanation: "To view the map and ALL its referenced layers, a user must have access to every layer. The Marketing group layer restricts access to group members only — so only Marketing group members can see both layers. The public can see the map but not the restricted layer."
+  },
+  {
+    domain: "Content Management & Sharing — Sharing",
+    question: "A utilities group contains critical infrastructure information. Access is by invitation only and content shared solely to this group is visible only to group members. What sharing level is this?",
+    options: [
+      "Private",
+      "Organization",
+      "Public",
+      "Group"
+    ],
+    answer: 3,
+    explanation: "Group-level sharing makes content visible only to members of that specific group. For sensitive infrastructure data, group sharing with invitation-only access ensures only authorized users can see the content."
+  },
+  {
+    domain: "Content Management & Sharing — Sharing",
+    question: "On the item page for a web map, where would you find the source/credit for the data?",
+    options: [
+      "Owner",
+      "Tags",
+      "Help",
+      "Acknowledgments"
+    ],
+    answer: 3,
+    explanation: "The Acknowledgments section on an item page in ArcGIS Online contains the data source and credits — who created the data, when, and any licensing information."
+  },
 
-            q.options.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'option';
-                btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
-                btn.onclick = () => selectAnswer(i);
-                list.appendChild(btn);
-            });
+  // USER ROLES
+  {
+    domain: "Content Management & Sharing — User Roles",
+    question: "Which ArcGIS Online role can add and share content, edit features, create web maps and web apps, and join or create groups?",
+    options: [
+      "Viewer",
+      "Data Editor",
+      "Publisher",
+      "User"
+    ],
+    answer: 3,
+    explanation: "The User role can add and share content, edit features, create and share web maps or web apps, and join or create groups. They are generally the consumers and contributors of the site's content."
+  },
+  {
+    domain: "Content Management & Sharing — User Roles",
+    question: "What additional privilege does a Publisher have compared to a User in ArcGIS Online?",
+    options: [
+      "The ability to manage the organization's settings",
+      "The ability to invite external collaboration partners to groups",
+      "The ability to publish features and map tiles as hosted web layers",
+      "The ability to edit features shared by other users"
+    ],
+    answer: 2,
+    explanation: "Publishers have all User privileges plus the ability to publish features and map tiles as hosted web layers, and perform analyses on layers in maps. They cannot manage the organization or invite external partners."
+  },
+  {
+    domain: "Content Management & Sharing — User Roles",
+    question: "Which role has Viewer privileges plus the ability to edit features shared by other ArcGIS users?",
+    options: [
+      "User",
+      "Data Editor",
+      "Publisher",
+      "Facilitator"
+    ],
+    answer: 1,
+    explanation: "Data Editors have Viewer privileges plus the ability to edit features shared by other ArcGIS users. This role is compatible with all user types except Viewer and is designed for users who only need to edit, not create content."
+  },
+  {
+    domain: "Content Management & Sharing — User Roles",
+    question: "Which role can invite partnered collaboration members from another organization into groups?",
+    options: [
+      "Administrator",
+      "Facilitator",
+      "Publisher",
+      "User"
+    ],
+    answer: 1,
+    explanation: "Facilitators have all Publisher privileges plus the ability to invite partnered collaboration members to groups — including creating and managing partnered collaboration groups and inviting members from other organizations."
+  },
+  {
+    domain: "Content Management & Sharing — User Roles",
+    question: "Which ArcGIS Online role manages site usage, content, users and settings for the entire organization?",
+    options: [
+      "Facilitator",
+      "Publisher",
+      "Administrator",
+      "User"
+    ],
+    answer: 2,
+    explanation: "Administrators have all Facilitator privileges and additionally manage the ArcGIS Online organization — including site usage, content, users and settings. They have the highest level of access."
+  },
+  {
+    domain: "Content Management & Sharing — User Roles",
+    question: "Which two privileges are available to the Publisher role in ArcGIS Online?",
+    options: [
+      "Manage the organizational site and invite external partners",
+      "Publish services and perform analysis",
+      "Create partnered collaborations and manage users",
+      "Edit features only and join groups"
+    ],
+    answer: 1,
+    explanation: "Publishers can publish services (features and map tiles as hosted web layers) and perform analysis on layers in maps. They cannot manage the organization or invite external partners — those are Facilitator/Administrator privileges."
+  },
 
-            const expl = document.getElementById('explanation');
-            expl.textContent = '';
-            expl.classList.remove('visible');
+  // ARCGIS ONLINE CAPABILITIES
+  {
+    domain: "Content Management & Sharing — ArcGIS Online",
+    question: "Which best defines ArcGIS Online?",
+    options: [
+      "A desktop GIS application for creating and editing spatial data offline",
+      "An on-premises GIS platform managed within your own infrastructure",
+      "A service that allows organizations to create, share and manage geographic content in a secure cloud-based environment",
+      "A Python library for running spatial analysis scripts"
+    ],
+    answer: 2,
+    explanation: "ArcGIS Online is a cloud-based SaaS (Software as a Service) platform that enables organizations to create, share and manage all their geographic content securely — without managing server infrastructure."
+  },
+  {
+    domain: "Content Management & Sharing — ArcGIS Online",
+    question: "Which ArcGIS Online capability ensures that content is accessed by the correct people?",
+    options: [
+      "Smart mapping",
+      "Sharing",
+      "Analysis",
+      "Apps"
+    ],
+    answer: 1,
+    explanation: "The Sharing capability controls who can access content — privately, within a group, across the organization or publicly. It is the mechanism that ensures the right people see the right content."
+  },
+  {
+    domain: "Content Management & Sharing — ArcGIS Online",
+    question: "Which step should an analyst take before sharing a published web layer with their team in ArcGIS Online?",
+    options: [
+      "Create a web app from the layer",
+      "Share the layer as a layer package",
+      "Add the layer to a web map",
+      "Complete the layer's item details"
+    ],
+    answer: 3,
+    explanation: "Before sharing a layer with a team, the analyst should complete the item details — title, summary, description, tags, credits. This ensures the team understands what the layer is and how to use it."
+  },
+  {
+    domain: "Content Management & Sharing — ArcGIS Online",
+    question: "Which step should you take to create a hosted web layer in ArcGIS Online?",
+    options: [
+      "Add an imagery layer to ArcGIS Online",
+      "Manage a web app in ArcGIS Online",
+      "Use ArcGIS Online to share a map",
+      "Publish your data to ArcGIS Online"
+    ],
+    answer: 3,
+    explanation: "To create a hosted web layer, you publish your data to ArcGIS Online. This uploads the data and hosts it as a web layer on Esri's infrastructure, making it accessible as a feature, tile or imagery layer."
+  },
 
-            const next = document.getElementById('btn-next');
-            next.classList.remove('visible');
-            next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
+  // APP BUILDERS
+  {
+    domain: "Content Management & Sharing — App Builders",
+    question: "Which ArcGIS app builder allows you to quickly transform a map into a focused, interactive web app using pre-configured templates?",
+    options: [
+      "ArcGIS Dashboards",
+      "ArcGIS Instant Apps",
+      "ArcGIS Experience Builder",
+      "ArcGIS StoryMaps"
+    ],
+    answer: 1,
+    explanation: "ArcGIS Instant Apps lets you quickly transform a map into a focused, interactive web app by selecting from a collection of pre-configured app templates — no coding required."
+  },
+  {
+    domain: "Content Management & Sharing — App Builders",
+    question: "You want to display maps and data in an interactive dashboard with real-time updates. Which app builder should you use?",
+    options: [
+      "ArcGIS StoryMaps",
+      "ArcGIS Experience Builder",
+      "ArcGIS Instant Apps",
+      "ArcGIS Dashboards"
+    ],
+    answer: 3,
+    explanation: "ArcGIS Dashboards displays maps and data in an interactive dashboard that provides real-time updates, helping audiences make informed decisions at a glance."
+  },
+  {
+    domain: "Content Management & Sharing — App Builders",
+    question: "Which app builder is designed to create digital stories by combining maps, scenes, multimedia and narrative content?",
+    options: [
+      "ArcGIS StoryMaps",
+      "ArcGIS Dashboards",
+      "ArcGIS Instant Apps",
+      "ArcGIS Experience Builder"
+    ],
+    answer: 0,
+    explanation: "ArcGIS StoryMaps creates digital stories by combining maps, scenes, embedded content, multimedia and more into an interactive narrative that can create awareness, influence opinion and effect change."
+  },
+  {
+    domain: "Content Management & Sharing — App Builders",
+    question: "You want to create a 3D visualization of your data using ArcGIS Online. Which type of content should you use?",
+    options: [
+      "Web map",
+      "Imagery layer",
+      "Web scene",
+      "Basemap"
+    ],
+    answer: 2,
+    explanation: "A web scene is the content type in ArcGIS Online designed for 3D visualization. Web maps are for 2D visualization. Scene Viewer in ArcGIS Online is used to view and interact with web scenes."
+  },
 
-            const pct = ((current + 1) / questions.length) * 100;
-            document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
-            document.getElementById('progress-fill').style.width = pct + '%';
-        }
+  // WEB MAP WORKFLOW
+  {
+    domain: "Mapping & Visualization — Web Map Workflow",
+    question: "An analyst has added zoning and street content to a map in ArcGIS Online. What is the next step in the web map creation workflow?",
+    options: [
+      "Determine what content is needed for the map",
+      "Find and add more content to the map",
+      "Set up the map according to the map user's tasks",
+      "Save the web map"
+    ],
+    answer: 2,
+    explanation: "The web map creation workflow in ArcGIS Online is: (1) Choose content → (2) Add content → (3) Set up the map for the user's tasks → (4) Save the map. After adding content, the next step is setting up the map."
+  },
+  {
+    domain: "Mapping & Visualization — Web Map Workflow",
+    question: "During which step of creating a web map in ArcGIS Online do you arrange symbolized data layers in an optimal order?",
+    options: [
+      "Set up the map",
+      "Save the map",
+      "Choose the content",
+      "Add the content"
+    ],
+    answer: 3,
+    explanation: "During the 'Add the content' step, you add layers, arrange them in optimal order and apply symbology. Setting up the map is about configuring pop-ups and map behavior for the end user."
+  },
+  {
+    domain: "Mapping & Visualization — Web Map Workflow",
+    question: "A water meter technician needs to view information about inspected water meters in the field. Which layer type should the web map include?",
+    options: [
+      "Raster layers",
+      "Elevation layers",
+      "Tables",
+      "Operational layers"
+    ],
+    answer: 3,
+    explanation: "Operational layers contain the actual data users interact with — in this case, inspected water meter features with attribute information. Raster and elevation layers provide context, not editable feature data."
+  },
+  {
+    domain: "Content Management & Sharing — Sharing",
+    question: "An analyst wants to present several maps compared side by side to an audience in ArcGIS Online. Which action simplifies sharing all these maps together?",
+    options: [
+      "Create a single web map with all map layers combined",
+      "Create web layers in separate maps",
+      "Add all web maps to a single web app",
+      "Add all web map URLs to a CSV file"
+    ],
+    answer: 2,
+    explanation: "Adding multiple web maps to a single web app allows the analyst to share one item that presents all the maps together. ArcGIS Experience Builder or Instant Apps can host multiple maps in one unified app experience."
+  }
+];
 
-        function selectAnswer(index) {
-            if (answered) return;
-            answered = true;
+let current = 0;
+let score = 0;
+let answered = false;
 
-            const q = questions[current];
-            const options = document.querySelectorAll('.option');
+function loadQuestion() {
+  const q = questions[current];
+  answered = false;
 
-            options.forEach(btn => btn.disabled = true);
-            options[q.answer].classList.add('correct');
+  document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
+  document.getElementById('question-text').textContent = q.question;
 
-            if (index === q.answer) {
-                score++;
-            } else {
-                options[index].classList.add('wrong');
-            }
+  const letters = ['A', 'B', 'C', 'D'];
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
 
-            const expl = document.getElementById('explanation');
-            expl.textContent = q.explanation;
-            expl.classList.add('visible');
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    list.appendChild(btn);
+  });
 
-            document.getElementById('btn-next').classList.add('visible');
-        }
+  const expl = document.getElementById('explanation');
+  expl.textContent = '';
+  expl.classList.remove('visible');
 
-        function nextQuestion() {
-            current++;
-            if (current < questions.length) {
-                loadQuestion();
-            } else {
-                showResult();
-            }
-        }
+  const next = document.getElementById('btn-next');
+  next.classList.remove('visible');
+  next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
 
-        function showResult() {
-            document.getElementById('quiz-screen').style.display = 'none';
-            const rs = document.getElementById('result-screen');
-            rs.style.display = 'block';
+  const pct = ((current + 1) / questions.length) * 100;
+  document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
 
-            const pct = Math.round((score / questions.length) * 100);
-            document.getElementById('result-score').textContent = `${score}/${questions.length}`;
-            document.getElementById('result-sub').textContent =
-                pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
-                    pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
-                        `${pct}% — À retravailler avant l'exam.`;
-        }
+function selectAnswer(index) {
+  if (answered) return;
+  answered = true;
 
-        function restart() {
-            current = 0;
-            score = 0;
-            document.getElementById('result-screen').style.display = 'none';
-            document.getElementById('quiz-screen').style.display = 'block';
-            loadQuestion();
-        }
+  const q = questions[current];
+  const options = document.querySelectorAll('.option');
 
-        loadQuestion();
-    </script>
+  options.forEach(btn => btn.disabled = true);
+  options[q.answer].classList.add('correct');
+
+  if (index === q.answer) {
+    score++;
+  } else {
+    options[index].classList.add('wrong');
+  }
+
+  const expl = document.getElementById('explanation');
+  expl.textContent = q.explanation;
+  expl.classList.add('visible');
+
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'block';
+
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('result-score').textContent = `${score}/${questions.length}`;
+  document.getElementById('result-sub').textContent =
+    pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
+    pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
+    `${pct}% — À retravailler avant l'exam.`;
+}
+
+function restart() {
+  current = 0;
+  score = 0;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
 </body>
-
 </html>

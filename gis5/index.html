@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz GIS — Série 5</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0d0d; --surface: #161616; --border: #2a2a2a;
+      --accent: #c8f060; --accent-dim: rgba(200,240,96,0.1);
+      --text: #f0f0f0; --muted: #666;
+      --wrong: #ff5f5f; --wrong-dim: rgba(255,95,95,0.1);
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; padding: 3rem 2rem; }
+    header { max-width: 680px; margin: 0 auto 3rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+    .back { font-size: 0.72rem; color: var(--muted); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.15s; }
+    .back:hover { color: var(--accent); }
+    .header-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; }
+    .progress-wrap { font-size: 0.65rem; color: var(--muted); text-align: right; }
+    .progress-bar { height: 2px; background: var(--border); border-radius: 1px; margin-top: 0.4rem; width: 80px; margin-left: auto; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: 1px; transition: width 0.3s ease; }
+    main { max-width: 680px; margin: 0 auto; }
+    .question-meta { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 1.2rem; }
+    .question-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; line-height: 1.5; margin-bottom: 2rem; color: var(--text); }
+    .options { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 2rem; }
+    .option { background: var(--surface); padding: 1.1rem 1.4rem; display: flex; align-items: flex-start; gap: 1rem; cursor: pointer; transition: background 0.12s; border: none; text-align: left; color: var(--text); font-family: 'DM Mono', monospace; font-size: 0.85rem; width: 100%; line-height: 1.5; }
+    .option:hover:not(:disabled) { background: #1e1e1e; }
+    .option-letter { font-size: 0.65rem; color: var(--muted); min-width: 1.2rem; text-transform: uppercase; padding-top: 0.15rem; }
+    .option.correct { background: var(--accent-dim); border-left: 2px solid var(--accent); }
+    .option.correct .option-letter { color: var(--accent); }
+    .option.wrong { background: var(--wrong-dim); border-left: 2px solid var(--wrong); }
+    .option.wrong .option-letter { color: var(--wrong); }
+    .option:disabled { cursor: default; }
+    .explanation { font-size: 0.78rem; color: var(--muted); line-height: 1.6; padding: 1rem 1.2rem; border-left: 2px solid var(--border); margin-bottom: 2rem; display: none; }
+    .explanation.visible { display: block; }
+    .btn-next { background: var(--accent); color: #0d0d0d; border: none; padding: 0.85rem 2rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.05em; display: none; transition: opacity 0.15s; }
+    .btn-next:hover { opacity: 0.85; }
+    .btn-next.visible { display: inline-block; }
+    #result-screen { display: none; }
+    .result-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 1rem; }
+    .result-score { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 4rem; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; }
+    .result-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 3rem; }
+    .result-breakdown { background: var(--border); height: 1px; margin-bottom: 2rem; }
+    .btn-retry { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.85rem 2rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; letter-spacing: 0.05em; transition: background 0.15s; margin-right: 1rem; }
+    .btn-retry:hover { background: var(--accent-dim); }
+    .btn-hub { font-size: 0.72rem; color: var(--muted); text-decoration: none; text-transform: uppercase; letter-spacing: 0.1em; transition: color 0.15s; }
+    .btn-hub:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+<header>
+  <a class="back" href="../">← Hub</a>
+  <div class="header-title">GIS Foundation — Série 5</div>
+  <div class="progress-wrap">
+    <span id="progress-text">1 / 35</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:2.86%"></div></div>
+  </div>
+</header>
+<main>
+  <div id="quiz-screen">
+    <div class="question-meta" id="question-domain">Domaine · —</div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-list"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
+  </div>
+  <div id="result-screen">
+    <div class="result-label">— Résultat final</div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-sub" id="result-sub"></div>
+    <div class="result-breakdown"></div>
+    <button class="btn-retry" onclick="restart()">Recommencer</button>
+    <a class="btn-hub" href="../">← Retour au hub</a>
+  </div>
+</main>
+<script>
+const questions = [
+
+  // ── SPATIAL ANALYSIS CATEGORIES ──────────────────────────────────────────
+  {
+    domain: "Processing & Analysis — Spatial Analysis Categories",
+    question: "A city planner asks: \"What route should we use to connect the new suburb to the highway?\" Which spatial analysis category does this question belong to?",
+    options: [
+      "Understand where",
+      "Detect and quantify patterns",
+      "Find the best locations and paths",
+      "Measure size, shape, and distribution"
+    ],
+    answer: 2,
+    explanation: "\"Find the best locations and paths\" covers questions about the optimal route to travel or the best location for a new facility. Finding a route between two places is a classic example of this category."
+  },
+  {
+    domain: "Processing & Analysis — Spatial Analysis Categories",
+    question: "An epidemiologist asks: \"How will this disease spread geographically over the next 6 months?\" Which spatial analysis category applies?",
+    options: [
+      "Understand where",
+      "Make predictions",
+      "Detect and quantify patterns",
+      "Determine how places are related"
+    ],
+    answer: 1,
+    explanation: "\"Make predictions\" covers questions about how things may appear in the future — including how a disease or fire danger will spread across space. This category is forward-looking and temporal."
+  },
+  {
+    domain: "Processing & Analysis — Spatial Analysis Categories",
+    question: "You are studying bald eagle nesting locations in Alaska and ask: \"What is the extent of the habitat and where are nests most concentrated?\" Which category best applies?",
+    options: [
+      "Making predictions",
+      "Finding the best locations and paths",
+      "Determining how places are related",
+      "Measuring size, shape, and distribution"
+    ],
+    answer: 3,
+    explanation: "Describing the extent of a habitat (geometry) and the concentration (distribution) of nests falls under \"Measure size, shape, and distribution\" — which covers area, perimeter, and the spatial distribution of objects."
+  },
+  {
+    domain: "Processing & Analysis — Spatial Analysis Categories",
+    question: "A retail analyst needs to determine which competitor stores are within 5 km of a new store and how their service areas overlap. Which category best describes this analysis?",
+    options: [
+      "Understand where",
+      "Make predictions",
+      "Determine how places are related",
+      "Detect and quantify patterns"
+    ],
+    answer: 2,
+    explanation: "\"Determine how places are related\" involves quantifying spatial relationships — what is near, within, or overlapping other features in space and time. Proximity and overlap analysis between stores is a direct example."
+  },
+  {
+    domain: "Processing & Analysis — Spatial Analysis Categories",
+    question: "A crime analyst detects an unusual clustering of incidents in the northeast quadrant of the city. Which spatial analysis category does this represent?",
+    options: [
+      "Understand where",
+      "Make predictions",
+      "Find the best locations and paths",
+      "Detect and quantify patterns"
+    ],
+    answer: 3,
+    explanation: "\"Detect and quantify patterns\" involves finding hot spots, clusters, or outliers in data and determining how those patterns change over time. Identifying a crime cluster is a classic pattern detection task."
+  },
+  {
+    domain: "Processing & Analysis — Spatial Analysis Categories",
+    question: "Which four of the following are part of the six official categories of spatial analysis?",
+    options: [
+      "Isolating the issues / Calculating values / Changing perspective / Understand where",
+      "Understanding where / Making predictions / Measuring size, shape, and distribution / Finding the best locations and paths",
+      "Calculating values / Isolating the issues / Make predictions / Determine how places are related",
+      "Changing perspective / Understand where / Detect patterns / Isolating the issues"
+    ],
+    answer: 1,
+    explanation: "The six official spatial analysis categories are: Understand where, Measure size/shape/distribution, Determine how places are related, Find the best locations and paths, Detect and quantify patterns, and Make predictions. The distractors (Isolating issues, Calculating values, Changing perspective) are not part of this framework."
+  },
+
+  // ── SPATIAL ANALYSIS WORKFLOW ─────────────────────────────────────────────
+  {
+    domain: "Processing & Analysis — Analysis Workflow",
+    question: "What is the correct order of the spatial analysis workflow steps?",
+    options: [
+      "Explore data → Ask questions → Analyze → Present results → Interpret → Repeat → Decide",
+      "Ask questions → Explore and prepare data → Analyze and model → Interpret results → Repeat or modify → Present results → Make decisions",
+      "Make decisions → Ask questions → Explore data → Analyze → Interpret → Present → Repeat",
+      "Ask questions → Analyze → Interpret → Explore data → Present → Repeat → Decide"
+    ],
+    answer: 1,
+    explanation: "The correct 7-step spatial analysis workflow is: (1) Ask questions → (2) Explore and prepare data → (3) Analyze and model → (4) Interpret results → (5) Repeat or modify → (6) Present results → (7) Make decisions."
+  },
+  {
+    domain: "Processing & Analysis — Analysis Workflow",
+    question: "During the 'Explore and prepare data' step of the spatial analysis workflow, which action is performed?",
+    options: [
+      "Showing results to stakeholders",
+      "Using results to take action and make decisions",
+      "Clipping data to the study area and examining data quality",
+      "Breaking the problem into smaller components that can be modeled"
+    ],
+    answer: 2,
+    explanation: "During 'Explore and prepare data', you choose data based on your questions, examine it for quality and completeness, and prepare it — for example by clipping it to the study area or editing features and attributes."
+  },
+  {
+    domain: "Processing & Analysis — Analysis Workflow",
+    question: "After analyzing data, an analyst discovers that cargo port proximity was overlooked and must be included. Which step of the workflow should the analyst perform next?",
+    options: [
+      "Make a decision and choose the best location",
+      "Present results to company leadership",
+      "Interpret results and produce a recommendations report",
+      "Repeat and refine the analysis workflow using the additional data"
+    ],
+    answer: 3,
+    explanation: "When new information reveals gaps in the analysis, the correct workflow step is 'Repeat or modify' — refining the workflow to include the new variable (cargo port proximity) before interpreting and presenting results."
+  },
+  {
+    domain: "Processing & Analysis — Analysis Workflow",
+    question: "A pharmaceutical company runs geoprocessing tools to find locations where evening traffic flow allows easy right-hand turns into a parking lot. Which workflow step is this?",
+    options: [
+      "Ask questions",
+      "Interpret results",
+      "Analyze and model",
+      "Explore and prepare data"
+    ],
+    answer: 2,
+    explanation: "Running spatial tools to quantify and evaluate spatial questions — like traffic flow and accessibility — is the 'Analyze and model' step. This is where you break the problem into components and run geoprocessing tools."
+  },
+  {
+    domain: "Processing & Analysis — Analysis Workflow",
+    question: "In which two scenarios would applying the full spatial analysis workflow be most appropriate?",
+    options: [
+      "Updating parcel maps due to new construction / Producing a map of client visit locations",
+      "Evaluating bus route efficiency / Identifying where an infectious disease is spreading",
+      "Creating a basemap / Uploading a CSV file to ArcGIS Online",
+      "Labeling features on a map / Changing a layer's symbology"
+    ],
+    answer: 1,
+    explanation: "The spatial analysis workflow is most appropriate for complex analytical problems: evaluating bus route efficiency (spatial optimization) and tracking disease spread (pattern detection + prediction) both require the full structured workflow. Simple mapping or data updates do not."
+  },
+
+  // ── SELECT BY LOCATION ────────────────────────────────────────────────────
+  {
+    domain: "Processing & Analysis — Spatial Selection",
+    question: "Which ArcGIS Pro tool should you use to select point features that are within a given distance from a single point feature?",
+    options: [
+      "Select Layer By Attribute",
+      "Measure Distance",
+      "Measure Area",
+      "Select Layer By Location"
+    ],
+    answer: 3,
+    explanation: "Select Layer By Location selects features based on their spatial relationship to other features — including features within a specified distance. Select By Attribute uses field values, not spatial position."
+  },
+
+  // ── EDITING FEATURES — TEMPLATES ──────────────────────────────────────────
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Which statement best explains the editing capabilities of ArcGIS Pro?",
+    options: [
+      "ArcGIS Pro allows you to create new features only and does not allow modification or deletion",
+      "ArcGIS Pro allows you to edit only attribute information, not geometry",
+      "ArcGIS Pro allows you to work with features from enterprise geodatabases only",
+      "ArcGIS Pro allows you to edit both the geometry and attribute information of various features"
+    ],
+    answer: 3,
+    explanation: "ArcGIS Pro provides full feature editing capabilities — you can create, modify (geometry and attributes) and delete features. It is not limited to enterprise geodatabases or to attributes only."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "In ArcGIS Pro, every editable feature layer automatically has a feature template created when the layer is added to a map. Which statement about feature templates is true?",
+    options: [
+      "Feature templates can only be created manually — none are created automatically",
+      "You can override the layer specified in a feature template but not the attributes",
+      "You can override the attributes or tools in a template but not the layer",
+      "Each layer can only have one feature template at a time"
+    ],
+    answer: 2,
+    explanation: "Feature templates control three default settings: layer, attributes and default tool. You can override the attributes and tools when creating a feature, but you cannot change the layer — the layer is fixed. However, you can create multiple templates per layer."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Which two default settings are controlled by an editing template in ArcGIS Pro?",
+    options: [
+      "The sharing settings and snapping tolerance of the feature",
+      "The attributes that the feature will have and the layer where it will be stored",
+      "The coordinate system and spatial resolution of the feature",
+      "The label style and symbol color of the feature"
+    ],
+    answer: 1,
+    explanation: "The three default settings controlled by an editing template are: (1) the layer where the feature will be stored, (2) the attributes the feature will have, and (3) the default tool used to create the feature. Sharing settings and snapping tolerance are not template-controlled."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "A GIS analyst needs to create multiple building footprint templates with different building types (residential, commercial, industrial). How should this be configured in ArcGIS Pro?",
+    options: [
+      "Create separate feature layers for each building type",
+      "Use a single template and change the attributes manually each time",
+      "Create several feature templates for the same layer, each configured with unique attribute values identifying the building type",
+      "Use group templates that span multiple layers automatically"
+    ],
+    answer: 2,
+    explanation: "You can create multiple feature templates for a single layer, each pre-configured with different default attribute values. This way, creating a residential vs. commercial building is as simple as selecting the appropriate template — no manual attribute changes needed each time."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Before creating features in ArcGIS Pro, what should the analyst consider first?",
+    options: [
+      "The default tool specified in the template",
+      "The snapping tolerance specified in the templates",
+      "The scale at which the feature will be displayed",
+      "The attributes that the feature will have"
+    ],
+    answer: 2,
+    explanation: "Before creating features, the analyst should consider the scale at which the feature will be displayed — this determines the level of detail needed for the geometry and ensures the feature is appropriate for its intended use."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "What is the correct order for modifying existing features in ArcGIS Pro?",
+    options: [
+      "Choose a template → Confirm editable → Modify features → Edit attributes → Save",
+      "Edit attributes → Confirm editable → Choose template → Modify features → Save",
+      "Confirm that the feature is editable → Choose a template → Modify features → Edit attributes → Save or discard",
+      "Modify features → Confirm editable → Edit attributes → Choose template → Save"
+    ],
+    answer: 2,
+    explanation: "The recommended order for modifying existing features is: (1) Confirm the feature is editable, (2) Choose a template, (3) Modify features as needed, (4) Edit attributes as needed, (5) Save or discard the edits. Always confirm editability first to avoid data loss."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "To provide route and accessibility information about each bus stop feature on a map, what should the analyst do?",
+    options: [
+      "Create an annotation feature class with the information",
+      "Snap each point to the corresponding bus route line",
+      "Apply a group template to the feature class",
+      "Add attribute values to each bus stop feature"
+    ],
+    answer: 3,
+    explanation: "Attribute values store descriptive information (like route name, accessibility type) directly in the feature's attribute table. This is the correct way to associate non-spatial information with a feature — not annotation, which is for map labels."
+  },
+
+  // ── SNAPPING ──────────────────────────────────────────────────────────────
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "What is snapping in ArcGIS Pro?",
+    options: [
+      "A method to automatically classify features by attribute value",
+      "A visual alignment guide that appears when features are near each other",
+      "The process of moving a feature to coincide with another point or feature's coordinates when the pointer is within a specified tolerance",
+      "A tool to merge overlapping features into a single geometry"
+    ],
+    answer: 2,
+    explanation: "Snapping moves a feature to exactly coincide with another point or feature's coordinates when your pointer is within a specified tolerance distance. It maintains geometric accuracy and topological integrity between features."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "An analyst wants edits to snap to the nearest starting point or ending point of a polyline or polygon. Which snapping type should be used?",
+    options: [
+      "Edge snapping",
+      "Tangent snapping",
+      "Intersection snapping",
+      "Endpoint snapping"
+    ],
+    answer: 3,
+    explanation: "Endpoint snapping snaps edits to the nearest start point or endpoint of a polyline or polygon. This is distinct from Vertex snapping (any vertex) and Edge snapping (any segment along the edge)."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "A water supply line needs to be precisely connected to a washroom point feature in ArcGIS Pro. Which action ensures accurate geometric connection?",
+    options: [
+      "Edit the attributes of the affected features",
+      "Snap the line endpoint to the washroom point feature",
+      "Reshape the building polygon feature",
+      "Split and edit the water supply line feature"
+    ],
+    answer: 1,
+    explanation: "Snapping the line endpoint to the washroom point feature ensures the two features share exactly the same coordinates — creating a topologically correct connection. Editing attributes or reshaping polygons does not fix geometric connectivity."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Which snapping type snaps edits to the nearest segment (edge) of a polyline or polygon — not to its vertices or endpoints?",
+    options: [
+      "Vertex snapping",
+      "Edge snapping",
+      "Midpoint snapping",
+      "Endpoint snapping"
+    ],
+    answer: 1,
+    explanation: "Edge snapping snaps to the nearest polyline or polygon segment (the line between vertices). Vertex snapping snaps to a vertex, endpoint snapping to start/end points, and midpoint snapping to the middle of a segment."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "An analyst is editing a curved road network and needs edits to snap to the nearest point of tangency on an arc segment. Which snapping type applies?",
+    options: [
+      "Intersection snapping",
+      "Midpoint snapping",
+      "Tangent snapping",
+      "Edge snapping"
+    ],
+    answer: 2,
+    explanation: "Tangent snapping specifically snaps to the nearest point of tangency on an arc or curved polygon segment. It is the correct tool when working with curved geometries that require tangential connectivity."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Which snapping type would you use to snap edits to the exact point where two roads cross each other?",
+    options: [
+      "Midpoint snapping",
+      "Vertex snapping",
+      "Point snapping",
+      "Intersection snapping"
+    ],
+    answer: 3,
+    explanation: "Intersection snapping snaps to the nearest intersection of two or more polylines or polygons. This is the correct type for snapping to road crossings or feature intersections."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "What is the main benefit of using snapping when editing features in ArcGIS Pro?",
+    options: [
+      "It automatically assigns attribute values to new features",
+      "It speeds up symbology rendering of the edited layer",
+      "It maintains geometric accuracy, topological integrity and avoids editing errors",
+      "It creates a backup copy of the original feature geometry"
+    ],
+    answer: 2,
+    explanation: "Snapping maintains the accuracy and geometric integrity of features and helps maintain topology. It prevents common editing errors like gaps or overlaps between adjacent features by ensuring features share exact coordinates."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Which snapping type snaps to the midpoint of the nearest polyline or polygon segment?",
+    options: [
+      "Vertex snapping",
+      "Midpoint snapping",
+      "Edge snapping",
+      "Endpoint snapping"
+    ],
+    answer: 1,
+    explanation: "Midpoint snapping snaps edits to the exact midpoint of the nearest polyline or polygon segment. This is useful when you need to connect features precisely at the center of an edge."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Which snapping type should you use to snap edits to the nearest point feature (not a line or polygon)?",
+    options: [
+      "Vertex snapping",
+      "Endpoint snapping",
+      "Point snapping",
+      "Intersection snapping"
+    ],
+    answer: 2,
+    explanation: "Point snapping snaps edits to the nearest point feature. It is specifically for snapping to point geometry — distinct from endpoint snapping (which targets start/end points of lines) and vertex snapping (vertices of lines/polygons)."
+  },
+
+  // ── COMBINED / SCENARIO QUESTIONS ─────────────────────────────────────────
+  {
+    domain: "Processing & Analysis — Spatial Analysis",
+    question: "A city transportation specialist wants to evaluate whether the current bus network efficiently serves all neighborhoods. Which spatial analysis category does this correspond to?",
+    options: [
+      "Understand where",
+      "Make predictions",
+      "Find the best locations and paths",
+      "Detect and quantify patterns"
+    ],
+    answer: 2,
+    explanation: "Evaluating bus route efficiency involves finding optimal paths and assessing whether routes reach all areas effectively — this falls under 'Find the best locations and paths', which covers route optimization and location analysis."
+  },
+  {
+    domain: "Processing & Analysis — Analysis Workflow",
+    question: "After running an analysis and presenting results to stakeholders, which workflow step comes next?",
+    options: [
+      "Repeat or modify",
+      "Interpret results",
+      "Explore and prepare data",
+      "Make decisions"
+    ],
+    answer: 3,
+    explanation: "In the spatial analysis workflow, after presenting results to stakeholders, the final step is 'Make decisions' — using the spatial analysis results to take action. Present results always precedes Make decisions in the workflow."
+  },
+  {
+    domain: "Processing & Analysis — Analysis Workflow",
+    question: "During which workflow step do you examine results based on the spatial questions and identify potential issues with those results?",
+    options: [
+      "Explore and prepare data",
+      "Analyze and model",
+      "Interpret results",
+      "Repeat or modify"
+    ],
+    answer: 2,
+    explanation: "'Interpret results' is the step where you examine the output based on your spatial questions and identify any potential issues — such as unexpected values, missing areas or methodological gaps that may require refinement."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "Which types of editing templates in ArcGIS Pro can be used to create features using more than one layer simultaneously?",
+    options: [
+      "Default feature templates and scale templates",
+      "Group templates and preset templates",
+      "Layer templates and snapping templates",
+      "Attribute templates and tool templates"
+    ],
+    answer: 1,
+    explanation: "Group templates and preset templates can be used to create features using more than one layer. Unlike default feature templates (single-layer), these must be created manually using the Manage Templates pane."
+  },
+  {
+    domain: "Processing & Analysis — Editing Features",
+    question: "In ArcGIS Pro, when your pointer is within the snapping tolerance area while editing, what happens?",
+    options: [
+      "The feature is deleted and must be recreated from scratch",
+      "The feature is placed at the pointer's exact current position regardless of nearby features",
+      "The feature is pulled toward and placed at the exact location of the object being snapped to",
+      "A dialog box appears asking you to confirm the snap location"
+    ],
+    answer: 2,
+    explanation: "When within the snapping tolerance area, the feature being placed is automatically pulled toward and placed at the exact coordinates of the snapping target — ensuring precise geometric coincidence without manual adjustment."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+function loadQuestion() {
+  const q = questions[current];
+  answered = false;
+  document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
+  document.getElementById('question-text').textContent = q.question;
+  const letters = ['A', 'B', 'C', 'D'];
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    list.appendChild(btn);
+  });
+  document.getElementById('explanation').textContent = '';
+  document.getElementById('explanation').classList.remove('visible');
+  const next = document.getElementById('btn-next');
+  next.classList.remove('visible');
+  next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
+  const pct = ((current + 1) / questions.length) * 100;
+  document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function selectAnswer(index) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const options = document.querySelectorAll('.option');
+  options.forEach(btn => btn.disabled = true);
+  options[q.answer].classList.add('correct');
+  if (index !== q.answer) options[index].classList.add('wrong');
+  else score++;
+  const expl = document.getElementById('explanation');
+  expl.textContent = q.explanation;
+  expl.classList.add('visible');
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) loadQuestion();
+  else showResult();
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('result-score').textContent = `${score}/${questions.length}`;
+  document.getElementById('result-sub').textContent =
+    pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
+    pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
+    `${pct}% — À retravailler avant l'exam.`;
+}
+
+function restart() {
+  current = 0; score = 0;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
