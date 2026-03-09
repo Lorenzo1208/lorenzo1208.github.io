@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz GIS — EGFF 2024</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --accent: #c8f060;
+      --accent-dim: rgba(200,240,96,0.1);
+      --text: #f0f0f0;
+      --muted: #666;
+      --wrong: #ff5f5f;
+      --wrong-dim: rgba(255,95,95,0.1);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      padding: 3rem 2rem;
+    }
+
+    header {
+      max-width: 680px;
+      margin: 0 auto 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    .back {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.15s;
+    }
+    .back:hover { color: var(--accent); }
+
+    .header-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+    }
+
+    .progress-wrap {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .progress-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      margin-top: 0.4rem;
+      width: 80px;
+      margin-left: auto;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+      transition: width 0.3s ease;
+    }
+
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* Quiz screen */
+    #quiz-screen {}
+
+    .question-meta {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .question-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      color: var(--text);
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .option {
+      background: var(--surface);
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      transition: background 0.12s;
+      border: none;
+      text-align: left;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    .option:hover:not(:disabled) {
+      background: #1e1e1e;
+    }
+
+    .option-letter {
+      font-size: 0.65rem;
+      color: var(--muted);
+      min-width: 1.2rem;
+      text-transform: uppercase;
+    }
+
+    .option.correct {
+      background: var(--accent-dim);
+      border-left: 2px solid var(--accent);
+    }
+
+    .option.correct .option-letter { color: var(--accent); }
+
+    .option.wrong {
+      background: var(--wrong-dim);
+      border-left: 2px solid var(--wrong);
+    }
+
+    .option.wrong .option-letter { color: var(--wrong); }
+
+    .option:disabled { cursor: default; }
+
+    .explanation {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 1rem 1.2rem;
+      border-left: 2px solid var(--border);
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .explanation.visible { display: block; }
+
+    .btn-next {
+      background: var(--accent);
+      color: #0d0d0d;
+      border: none;
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      display: none;
+      transition: opacity 0.15s;
+    }
+
+    .btn-next:hover { opacity: 0.85; }
+    .btn-next.visible { display: inline-block; }
+
+    /* Results screen */
+    #result-screen {
+      display: none;
+      text-align: left;
+    }
+
+    .result-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .result-score {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 4rem;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 3rem;
+    }
+
+    .result-breakdown {
+      background: var(--border);
+      height: 1px;
+      margin-bottom: 2rem;
+    }
+
+    .btn-retry {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.15s;
+      margin-right: 1rem;
+    }
+
+    .btn-retry:hover { background: var(--accent-dim); }
+
+    .btn-hub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: color 0.15s;
+    }
+
+    .btn-hub:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="back" href="../">← Hub</a>
+  <div class="header-title">GIS Foundation</div>
+  <div class="progress-wrap">
+    <span id="progress-text">1 / 5</span>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:20%"></div></div>
+  </div>
+</header>
+
+<main>
+  <div id="quiz-screen">
+    <div class="question-meta" id="question-domain">Domaine · —</div>
+    <div class="question-text" id="question-text"></div>
+    <div class="options" id="options-list"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Question suivante →</button>
+  </div>
+
+  <div id="result-screen">
+    <div class="result-label">— Résultat final</div>
+    <div class="result-score" id="result-score"></div>
+    <div class="result-sub" id="result-sub"></div>
+    <div class="result-breakdown"></div>
+    <button class="btn-retry" onclick="restart()">Recommencer</button>
+    <a class="btn-hub" href="../">← Retour au hub</a>
+  </div>
+</main>
+
+<script>
+const questions = [
+  {
+    domain: "Cartography & Visualization",
+    question: "Which map projection preserves the shape of small areas but distorts area at higher latitudes?",
+    options: ["Equal-area projection", "Conformal projection", "Equidistant projection", "Azimuthal projection"],
+    answer: 1,
+    explanation: "Conformal projections (like Mercator) preserve local shapes and angles but significantly distort area, especially near the poles."
+  },
+  {
+    domain: "Data Management",
+    question: "What is the primary difference between a Feature Class and a Shapefile in an Esri environment?",
+    options: [
+      "Shapefiles support topology, Feature Classes do not",
+      "Feature Classes can store raster data",
+      "Feature Classes reside in a geodatabase and support longer field names and subtypes",
+      "Shapefiles can hold unlimited attributes"
+    ],
+    answer: 2,
+    explanation: "Feature Classes in a geodatabase support longer field names (up to 64 chars), subtypes, domains, and relationships. Shapefiles are standalone and more limited."
+  },
+  {
+    domain: "Spatial Analysis",
+    question: "A buffer analysis on a vector point layer with a distance of 500m will produce:",
+    options: [
+      "A raster with cells within 500m highlighted",
+      "A polygon layer with circles of 500m radius around each point",
+      "A line layer connecting all points within 500m",
+      "A new point layer offset by 500m"
+    ],
+    answer: 1,
+    explanation: "Buffer analysis creates polygon features representing the area within a specified distance of input features."
+  },
+  {
+    domain: "Imagery & Remote Sensing",
+    question: "What does NDVI measure, and which bands are typically used?",
+    options: [
+      "Water content — Blue and Green",
+      "Urban density — Red and SWIR",
+      "Vegetation health — Near Infrared and Red",
+      "Soil moisture — Thermal and SWIR"
+    ],
+    answer: 2,
+    explanation: "NDVI (Normalized Difference Vegetation Index) = (NIR - Red) / (NIR + Red). High values indicate dense, healthy vegetation."
+  },
+  {
+    domain: "GIS Fundamentals",
+    question: "In a geodatabase, what is the purpose of a 'domain'?",
+    options: [
+      "To define coordinate systems for a dataset",
+      "To constrain valid attribute values for a field",
+      "To store metadata about the database",
+      "To link two feature classes together"
+    ],
+    answer: 1,
+    explanation: "Domains define valid values (coded value domain) or valid ranges (range domain) for attributes, ensuring data integrity across the geodatabase."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+function loadQuestion() {
+  const q = questions[current];
+  answered = false;
+
+  document.getElementById('question-domain').textContent = `Domaine · ${q.domain}`;
+  document.getElementById('question-text').textContent = q.question;
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    list.appendChild(btn);
+  });
+
+  const expl = document.getElementById('explanation');
+  expl.textContent = '';
+  expl.classList.remove('visible');
+
+  const next = document.getElementById('btn-next');
+  next.classList.remove('visible');
+  next.textContent = current === questions.length - 1 ? 'Voir les résultats →' : 'Question suivante →';
+
+  const pct = ((current + 1) / questions.length) * 100;
+  document.getElementById('progress-text').textContent = `${current + 1} / ${questions.length}`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function selectAnswer(index) {
+  if (answered) return;
+  answered = true;
+
+  const q = questions[current];
+  const options = document.querySelectorAll('.option');
+
+  options.forEach(btn => btn.disabled = true);
+  options[q.answer].classList.add('correct');
+
+  if (index === q.answer) {
+    score++;
+  } else {
+    options[index].classList.add('wrong');
+  }
+
+  const expl = document.getElementById('explanation');
+  expl.textContent = q.explanation;
+  expl.classList.add('visible');
+
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  const rs = document.getElementById('result-screen');
+  rs.style.display = 'block';
+
+  const pct = Math.round((score / questions.length) * 100);
+  document.getElementById('result-score').textContent = `${score}/${questions.length}`;
+  document.getElementById('result-sub').textContent =
+    pct >= 80 ? `${pct}% — Excellent, tu maîtrises le sujet.` :
+    pct >= 60 ? `${pct}% — Bien, encore quelques lacunes.` :
+    `${pct}% — À retravailler avant l'exam.`;
+}
+
+function restart() {
+  current = 0;
+  score = 0;
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
