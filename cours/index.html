@@ -412,14 +412,15 @@
                 </div>
                 <div class="ascii-block">
                     <pre>
-  VECTOR                          RASTER
-  ──────────────────────          ──────────────────────
-  Point  →  ·  (ville)           ┌───┬───┬───┬───┐
-  Ligne  →  ─── (route)          │ 12│ 18│ 24│ 22│
-  Polygone → ▭  (région)         ├───┼───┼───┼───┤
-                                 │ 9 │ 15│ 20│ 19│ ← valeur/pixel
-  <span class="hl">Données discrètes</span>               └───┴───┴───┴───┘
-                                 <span class="hl">Surface continue</span> (ex : temp °C)
+  VECTOR                     RASTER
+  ─────────────────────      ─────────────────────
+  Point   →  .  (ville)     ┌──────┬──────┬──────┬──────┐
+  Ligne   →  ── (route)     │  12  │  18  │  24  │  22  │
+  Polygone → □  (région)    ├──────┼──────┼──────┼──────┤
+                             │   9  │  15  │  20  │  19  │
+  <span class="hl">Données discrètes</span>          └──────┴──────┴──────┴──────┘
+                             ↑ chaque cellule = 1 valeur
+                             <span class="hl">Surface continue</span> (ex : temp °C)
         </pre>
                 </div>
                 <div class="callout green">
@@ -440,7 +441,8 @@
                         <div class="kv-key">GCS — WGS84</div>
                         <div class="kv-val">Système <strong>géographique</strong> mondial. Coordonnées en
                             <strong>degrés</strong> (latitude/longitude). Base des GPS et de la plupart des données
-                            mondiales.</div>
+                            mondiales.
+                        </div>
                     </div>
                     <div class="kv-row">
                         <div class="kv-key">PCS — Lambert 93</div>
@@ -452,7 +454,8 @@
                         <div class="kv-key">PCS — Web Mercator</div>
                         <div class="kv-val">Projection utilisée par Google Maps, ArcGIS Online (WKID 3857). Préserve les
                             <strong>formes locales</strong> mais <strong>déforme les surfaces</strong> près des pôles. ≠
-                            WGS84.</div>
+                            WGS84.
+                        </div>
                     </div>
                     <div class="kv-row">
                         <div class="kv-key">DMS</div>
@@ -513,11 +516,15 @@
                 </div>
                 <div class="ascii-block">
                     <pre>
-  Couche 3 : Bâtiments     ▭▭▭▭▭
-  Couche 2 : Routes        ──────
-  Couche 1 : Fond de carte ░░░░░░
-                           ──────
-  → <span class="hl">Analyse spatiale</span> = croiser ces couches pour répondre à une question
+  Un SIG empile des couches d'information les unes sur les autres :
+
+  ┌─────────────────────────────────┐   ← Couche 3 : Bâtiments  □□□
+  ├─────────────────────────────────┤   ← Couche 2 : Routes     ───
+  ├─────────────────────────────────┤   ← Couche 1 : Fond carte ░░░
+  └─────────────────────────────────┘
+
+  → <span class="hl">Analyse spatiale</span> = poser une question qui croise ces couches
+    Ex : "Quels bâtiments sont à moins de 50m d'une route ?"
         </pre>
                 </div>
             </div>
