@@ -56,6 +56,26 @@
     .logo span { color: var(--accent); }
 
     .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .back-link {
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-decoration: none;
+      transition: color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .back-link:hover { color: var(--accent); }
+
+    .header-tagline {
       font-size: 0.62rem;
       color: var(--muted);
       text-transform: uppercase;
@@ -343,7 +363,10 @@
 
 <header>
   <div class="logo">GIS <span>//</span> Flashcards</div>
-  <div class="header-right">Points faibles<br>uniquement</div>
+  <div class="header-right">
+    <a class="back-link" href="../">&#x2190; Hub</a>
+    <span class="header-tagline">Points faibles<br>uniquement</span>
+  </div>
 </header>
 
 <div class="cats" id="cats"></div>
