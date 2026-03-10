@@ -617,11 +617,92 @@ const ALL_CARDS = [
     cat: "Pièges exam",
     q: "Sur la page item d'ArcGIS Online,\noù trouve-t-on la source des données ?",
     a: `<span class="hi">Acknowledgments</span>\n\nPas dans Tags, pas dans Owner, pas dans Help.\n\n<span class="warn">Acknowledgments = source + crédits + licence</span>`
-  },
-  {
     cat: "Pièges exam",
     q: "Avant de partager une couche avec son équipe,\nquelle action doit faire l'analyste en PREMIER ?",
     a: `<span class="hi">Compléter les item details</span>\n\n→ Titre, résumé, description, tags, crédits\n\nPuis seulement partager.\n<span class="warn">Pas créer une web app, pas ajouter à une carte d'abord.</span>`
+  },
+
+  // ── FORMATS VECTEUR ──────────────────────────────────────────────────────
+  {
+    cat: "Formats vecteur",
+    q: "Cite les 4 formats vecteur principaux\net leur usage clé.",
+    a: `<span class="hi">Shapefile</span> → format Esri classique (multi-fichiers .shp/.dbf/.prj)\n<span class="hi">GeoJSON</span> → format web, texte JSON, léger\n<span class="hi">File GDB</span> → geodatabase Esri, haute performance, multi-couches\n<span class="hi">KML</span> → format Google, utilisé dans Google Earth\n\n<span class="warn">Piège : Shapefile = plusieurs fichiers liés (.shp + .dbf + .shx minimum)</span>`
+  },
+  {
+    cat: "Formats vecteur",
+    q: "Shapefile vs File Geodatabase :\nquelle est la différence clé ?",
+    a: `<span class="hi">Shapefile</span>\n→ 1 couche par fichier\n→ Max 2 Go\n→ Nom de champ limité à 10 caractères\n→ Pas de domaines ni de sous-types\n\n<span class="hi">File GDB</span>\n→ Plusieurs couches dans un conteneur\n→ Domaines, topologies, relations\n→ Meilleure performance et intégrité`
+  },
+
+  // ── FORMATS RASTER ───────────────────────────────────────────────────────
+  {
+    cat: "Formats raster",
+    q: "Cite les 3 formats raster principaux\net leur usage.",
+    a: `<span class="hi">GeoTIFF</span> → format universel, contient CRS intégré\nUsage : orthophotos, rasters d'analyse\n\n<span class="hi">DEM</span> (Digital Elevation Model) → modèle d'élévation\nUsage : terrain, pentes, bassins versants\n\n<span class="hi">IMG</span> → format ERDAS Imagine\nUsage : imagerie satellite, télédétection`
+  },
+  {
+    cat: "Formats raster",
+    q: "GeoTIFF vs DEM :\nquelle est la différence d'usage ?",
+    a: `<span class="hi">GeoTIFF</span> → image géoréférencée, format généraliste\nContient les coordonnées dans le fichier lui-même\nEx: orthophoto aérienne\n\n<span class="hi">DEM</span> → données d'élévation spécifiquement\nChaque pixel = altitude en mètres\nEx: calcul de pentes, ombrage topographique\n\n<span class="warn">DEM est souvent stocké EN GeoTIFF — les deux ne s'excluent pas</span>`
+  },
+
+  // ── CLASSIFICATION — STANDARD DEVIATION ──────────────────────────────────
+  {
+    cat: "Classification",
+    q: "Standard Deviation (Écart-type) :\nquand l'utiliser et comment ça classe ?",
+    a: `<span class="hi">Standard Deviation</span> → classe par écart par rapport à la MOYENNE\n\nLes classes sont définies par intervalles d'écart-type :\n→ ±0.5 SD / ±1 SD / ±1.5 SD / ±2 SD\n\nUsage : données avec distribution normale\nEx: températures, revenus, scores\n\n<span class="warn">Utilisé pour montrer les valeurs aberrantes (au-dessus/en-dessous de la norme)</span>`
+  },
+
+  // ── ÉLÉMENTS CARTO — GRATICULE / INSET MAP ───────────────────────────────
+  {
+    cat: "Éléments carto",
+    q: "C'est quoi un Graticule ?\nEt un Inset map ?",
+    a: `<span class="hi">Graticule</span> → grille des méridiens et parallèles\n(lignes de latitude/longitude sur la carte)\n\n<span class="hi">Inset map</span> → carte de localisation insérée\nMini-carte montrant où se situe la zone principale\npar rapport à un contexte plus large\n\n<span class="warn">Graticule ≠ grille de coordonnées projetées (grid)</span>`
+  },
+
+  // ── LABELING — CONFLICT RESOLUTION VS FITTING STRATEGY ───────────────────
+  {
+    cat: "Labeling",
+    q: "Conflict resolution vs Fitting strategy (Maplex) :\nquelle est la différence ?",
+    a: `<span class="hi">Conflict resolution</span> → comment PLACER un label\npour éviter qu'il chevauche d'autres labels ou features\n→ Ex: déplacer, masquer, réduire la priorité\n\n<span class="hi">Fitting strategy</span> → comment ADAPTER le label\nquand il ne rentre pas dans le polygone/ligne\n→ Ex: Stack (empiler), Overrun (déborder), Abbreviate (abréger)\n\n<span class="warn">Fitting strategy est EXCLUSIF à Maplex — Standard Engine n'a pas ça</span>`
+  },
+
+  // ── GEOPROCESSING — NEAR ─────────────────────────────────────────────────
+  {
+    cat: "Geoprocessing",
+    q: "Near : c'est quoi ?\nQue produit cet outil ?",
+    a: `<span class="hi">Near</span> → calcule la distance au plus proche voisin\n\nEntrée : couche A (input) + couche B (near features)\nRésultat : ajoute des champs à la couche A :\n→ <span class="hi">NEAR_DIST</span> : distance au plus proche\n→ <span class="hi">NEAR_FID</span> : identifiant de la feature la plus proche\n\nEx: pour chaque école, trouver l'hôpital le plus proche\n\n<span class="warn">Ne crée PAS de nouvelle géométrie — enrichit les attributs</span>`
+  },
+
+  // ── EDITING — TEMPLATES ──────────────────────────────────────────────────
+  {
+    cat: "Editing",
+    q: "C'est quoi un Feature Template dans ArcGIS Pro ?\nCiter les 3 composants d'un template.",
+    a: `<span class="hi">Feature Template</span> = modèle prédéfini pour créer des features rapidement\n\n3 composants :\n1. <span class="hi">Layer</span> → quelle couche cible\n2. <span class="hi">Attributes</span> → valeurs par défaut des champs\n3. <span class="hi">Tool</span> → outil de dessin par défaut\n\n<span class="warn">Les templates accélèrent la saisie répétitive</span>`
+  },
+  {
+    cat: "Editing",
+    q: "Group Template vs Preset Template :\nquelle est la différence ?",
+    a: `<span class="hi">Group Template</span> → crée des features dans PLUSIEURS couches simultanément\nEx: une route + ses bordures en une seule opération\n\n<span class="hi">Preset Template</span> → template avec géométrie pré-dessinée\nEx: un cercle de rayon fixe, un couloir standard\n\n<span class="warn">Les deux sont disponibles dans le panneau Create Features</span>`
+  },
+
+  // ── APP BUILDERS ─────────────────────────────────────────────────────────
+  {
+    cat: "App Builders",
+    q: "Cite les 4 App Builders officiels ArcGIS Online\net leur usage.",
+    a: `<span class="hi">Instant Apps</span> → apps simples en quelques clics, templates prêts à l'emploi\n<span class="hi">Experience Builder</span> → apps multi-pages, drag & drop, plus flexible\n<span class="hi">Dashboards</span> → tableaux de bord avec KPIs, gauges, listes\n<span class="hi">StoryMaps</span> → récits interactifs avec cartes, texte, médias\n\n<span class="warn">Enterprise, Insights → hors scope EGFF\nScope → concept inexistant ici</span>`
+  },
+  {
+    cat: "App Builders",
+    q: "Instant Apps vs Experience Builder :\nquand choisir l'un ou l'autre ?",
+    a: `<span class="hi">Instant Apps</span> → besoin simple + rapidité\n→ 1 carte, 1 objectif\n→ Templates prédéfinis, peu de configuration\nEx: visualiser une couche, explorer des données\n\n<span class="hi">Experience Builder</span> → besoin complexe + flexibilité\n→ Multi-pages, widgets multiples\n→ Intégration données tabulaires, galeries\nEx: portail métier complet`
+  },
+
+  // ── WEB MAP WORKFLOW ─────────────────────────────────────────────────────
+  {
+    cat: "Web Map Workflow",
+    q: "Cite les 4 étapes du Web Map Workflow\ndans ArcGIS Online.",
+    a: `1. <span class="hi">Choisir le contenu</span> → sélectionner les layers à utiliser\n2. <span class="hi">Ajouter le contenu</span> → ajouter à la carte (depuis living atlas, org, URL…)\n3. <span class="hi">Configurer la carte</span> → symbologie, pop-ups, étendue, basemap\n4. <span class="hi">Sauvegarder</span> → Save As → compléter les item details\n\n<span class="warn">Validate map → requis si partage depuis ArcGIS PRO (pas depuis Online)</span>`
   }
 ];
 
