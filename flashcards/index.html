@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards GIS — Points Faibles</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #141414;
+      --surface2: #1a1a1a;
+      --border: #252525;
+      --accent: #c8f060;
+      --accent-dim: rgba(200,240,96,0.08);
+      --text: #f0f0f0;
+      --muted: #555;
+      --muted2: #888;
+      --red: #ff5f5f;
+      --red-dim: rgba(255,95,95,0.08);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1.5rem 4rem;
+      user-select: none;
+    }
+
+    /* ── HEADER ── */
+    header {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.2rem;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .header-right {
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-align: right;
+    }
+
+    /* ── CATEGORY PILLS ── */
+    .cats {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 2rem;
+    }
+
+    .cat-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted2);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .cat-btn:hover { border-color: var(--muted2); color: var(--text); }
+    .cat-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+    /* ── PROGRESS ── */
+    .progress-row {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .progress-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      margin: 0 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    /* ── CARD ── */
+    .card-wrap {
+      width: 100%;
+      max-width: 620px;
+      perspective: 1200px;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      min-height: 240px;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      min-height: 240px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card-face.back {
+      transform: rotateY(180deg);
+      background: var(--surface2);
+      border-color: var(--accent);
+    }
+
+    .card-tag {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-bottom: 1.2rem;
+    }
+
+    .card-face.back .card-tag { color: var(--accent); opacity: 0.7; }
+
+    .card-question {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .card-answer {
+      font-size: 0.82rem;
+      line-height: 1.8;
+      color: var(--text);
+      white-space: pre-line;
+    }
+
+    .card-answer .hi { color: var(--accent); font-weight: 500; }
+    .card-answer .warn { color: var(--red); }
+
+    .flip-hint {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-top: 1.5rem;
+      text-align: right;
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .ctrl-btn {
+      flex: 1;
+      background: var(--surface);
+      border: none;
+      color: var(--muted2);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      padding: 0.9rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      transition: all 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .ctrl-btn:hover { background: #1e1e1e; color: var(--text); }
+    .ctrl-btn.primary { color: var(--accent); }
+    .ctrl-btn.primary:hover { background: var(--accent-dim); }
+
+    /* ── SCORE ROW ── */
+    .score-row {
+      width: 100%;
+      max-width: 620px;
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .score-cell {
+      flex: 1;
+      background: var(--surface);
+      padding: 0.8rem 1rem;
+      text-align: center;
+    }
+
+    .score-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      display: block;
+    }
+
+    .score-num.green { color: var(--accent); }
+    .score-num.red { color: var(--red); }
+    .score-num.gray { color: var(--muted2); }
+
+    .score-lbl {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      display: block;
+      margin-top: 0.2rem;
+    }
+
+    /* ── KEYBOARD HINT ── */
+    .kb-hint {
+      font-size: 0.6rem;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.08em;
+    }
+
+    .kb-hint kbd {
+      border: 1px solid var(--border);
+      padding: 0.1rem 0.4rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted2);
+    }
+
+    /* ── DONE SCREEN ── */
+    #done-screen {
+      display: none;
+      width: 100%;
+      max-width: 620px;
+      text-align: left;
+    }
+
+    .done-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--muted); margin-bottom: 1rem; }
+    .done-score { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 3.5rem; color: var(--accent); line-height: 1; }
+    .done-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; margin-bottom: 2.5rem; }
+    .done-divider { height: 1px; background: var(--border); margin-bottom: 2rem; }
+
+    .missed-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 1rem; }
+
+    .missed-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); margin-bottom: 2rem; }
+
+    .missed-item {
+      background: var(--red-dim);
+      border-left: 2px solid var(--red);
+      padding: 0.8rem 1rem;
+      font-size: 0.75rem;
+      color: var(--muted2);
+      line-height: 1.5;
+    }
+
+    .missed-item strong { color: var(--text); display: block; margin-bottom: 0.2rem; }
+
+    .done-btns { display: flex; gap: 1rem; align-items: center; }
+
+    .btn-restart {
+      background: var(--accent);
+      color: #0d0d0d;
+      border: none;
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: opacity 0.15s;
+    }
+    .btn-restart:hover { opacity: 0.85; }
+
+    .btn-missed {
+      background: transparent;
+      color: var(--red);
+      border: 1px solid var(--red);
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.15s;
+    }
+    .btn-missed:hover { background: var(--red-dim); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">GIS <span>//</span> Flashcards</div>
+  <div class="header-right">Points faibles<br>uniquement</div>
+</header>
+
+<div class="cats" id="cats"></div>
+
+<div class="progress-row">
+  <span class="progress-label" id="prog-label">1 / 0</span>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  <span class="progress-label" id="prog-pct">0%</span>
+</div>
+
+<div class="card-wrap" id="card-wrap" onclick="flipCard()">
+  <div class="card-inner" id="card-inner">
+    <div class="card-face front" id="card-front">
+      <div class="card-tag" id="front-tag">—</div>
+      <div class="card-question" id="front-q">—</div>
+      <div class="flip-hint">Cliquer pour révéler →</div>
+    </div>
+    <div class="card-face back" id="card-back">
+      <div class="card-tag" id="back-tag">Réponse</div>
+      <div class="card-answer" id="back-a">—</div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn" onclick="markCard(false)">✗ &nbsp;Raté</button>
+  <button class="ctrl-btn primary" onclick="flipCard()">↺ &nbsp;Retourner</button>
+  <button class="ctrl-btn" onclick="markCard(true)">✓ &nbsp;Su</button>
+</div>
+
+<div class="score-row">
+  <div class="score-cell">
+    <span class="score-num green" id="s-ok">0</span>
+    <span class="score-lbl">Su</span>
+  </div>
+  <div class="score-cell">
+    <span class="score-num red" id="s-miss">0</span>
+    <span class="score-lbl">Raté</span>
+  </div>
+  <div class="score-cell">
+    <span class="score-num gray" id="s-left">0</span>
+    <span class="score-lbl">Restant</span>
+  </div>
+</div>
+
+<div class="kb-hint">
+  <kbd>Espace</kbd> retourner &nbsp;·&nbsp;
+  <kbd>←</kbd> raté &nbsp;·&nbsp;
+  <kbd>→</kbd> su
+</div>
+
+<!-- DONE -->
+<div id="done-screen">
+  <div class="done-label">— Session terminée</div>
+  <div class="done-score" id="done-score">0/0</div>
+  <div class="done-sub" id="done-sub"></div>
+  <div class="done-divider"></div>
+  <div class="missed-title" id="missed-title"></div>
+  <div class="missed-list" id="missed-list"></div>
+  <div class="done-btns">
+    <button class="btn-restart" onclick="restartAll()">Recommencer tout</button>
+    <button class="btn-missed" id="btn-missed-only" onclick="restartMissed()">Revoir les ratés</button>
+  </div>
+</div>
+
+<script>
+const ALL_CARDS = [
+  // ── DATA DISCOVERY ──────────────────────────────────────────────────────
+  {
+    cat: "Projections",
+    q: "Tu veux mesurer la superficie d'une forêt.\nQuelle projection ?",
+    a: `<span class="hi">Equal Area</span>\n\nPréserve les surfaces.\nEx: calculer la taille d'un parc national.`
+  },
+  {
+    cat: "Projections",
+    q: "Tu fais une carte météo / topo.\nQuelle projection ?",
+    a: `<span class="hi">Conformal</span>\n\nPréserve les formes locales et les angles.\n<span class="warn">Web Mercator = Conformal</span> (distord les aires)`
+  },
+  {
+    cat: "Projections",
+    q: "Tu calcules des trajets de livraison depuis un entrepôt.\nQuelle projection ?",
+    a: `<span class="hi">Equidistant</span>\n\nPréserve les distances depuis un point central.`
+  },
+  {
+    cat: "Projections",
+    q: "Un pilote a besoin de directions précises depuis son aéroport.\nQuelle projection ?",
+    a: `<span class="hi">Azimuthal</span>\n\nPréserve les directions depuis le centre.\nUsage : navigation aéronautique.`
+  },
+  {
+    cat: "Projections",
+    q: "Tu fais une carte du monde pour une présentation générale.\nQuelle projection ?",
+    a: `<span class="hi">Compromise</span>\n\nNe préserve rien parfaitement.\nMinimise les distorsions globales.\nEx: Robinson, Winkel Tripel.`
+  },
+  {
+    cat: "Projections",
+    q: "Web Mercator : quelle propriété préserve-t-il ?\nEt laquelle déforme-t-il ?",
+    a: `Préserve : <span class="hi">Shape (Conformal)</span>\nDéforme : <span class="warn">Area (les surfaces)</span>\n\nExemple : le Groenland paraît aussi grand\nque l'Afrique → faux, l'Afrique est 14x plus grande.`
+  },
+  {
+    cat: "Projections",
+    q: "Cite les 4 propriétés spatiales qu'une projection peut déformer.",
+    a: `<span class="hi">Area</span> — superficie\n<span class="hi">Shape</span> — forme\n<span class="hi">Distance</span> — distances\n<span class="hi">Direction</span> — angles / caps\n\nAucune projection ne préserve les 4 en même temps.`
+  },
+  {
+    cat: "Échelle",
+    q: "Grande échelle vs Petite échelle :\nLaquelle montre le plus de détail ?",
+    a: `<span class="hi">Grande échelle</span> = plus de détail\n\nGrande échelle → 1:5 000 → petit dénom. → zoom avant\nPetite échelle → 1:1 000 000 → grand dénom. → zoom arrière\n\n<span class="warn">Astuce : 1/5000 > 1/1 000 000 (mathématiquement)</span>`
+  },
+  {
+    cat: "Échelle",
+    q: "1:1 000 000 — grande ou petite échelle ?\nGrande ou petite zone couverte ?",
+    a: `<span class="warn">Petite échelle</span>\nGrande zone couverte\nPeu de détail\n\nEx: carte de France entière`
+  },
+  {
+    cat: "Métadonnées",
+    q: "La symbologie (couleurs, styles) fait-elle partie\ndes métadonnées d'une couche ?",
+    a: `<span class="warn">NON — piège exam classique</span>\n\nMétadonnées = décrivent la DONNÉE\n(auteur, date, CRS, source, précision)\n\nSymbologie = décrit l'AFFICHAGE\n(couleurs, tailles, styles)`
+  },
+  {
+    cat: "Métadonnées",
+    q: "Cite 4 éléments qu'on trouve dans les métadonnées.",
+    a: `<span class="hi">Source / organisme producteur\nAuteur\nDate de création\nSystème de coordonnées (CRS)\nPrécision spatiale\nLicence d'utilisation</span>`
+  },
+
+  // ── MAPPING & VIZ ────────────────────────────────────────────────────────
+  {
+    cat: "Types de cartes",
+    q: "Choroplèthe vs Symboles proportionnels :\nQuelle différence d'usage ?",
+    a: `<span class="hi">Choroplèthe</span> → valeurs RELATIVES\n(densité, %, taux)\nPolygones colorés\n\n<span class="hi">Symboles proportionnels</span> → valeurs ABSOLUES\n(nombre total, quantité)\nSymbole dont la taille varie`
+  },
+  {
+    cat: "Types de cartes",
+    q: "Valeurs uniques vs Couleurs graduées :\nquand utiliser chacune ?",
+    a: `<span class="hi">Valeurs uniques</span> → données catégorielles\n(type de sol, pays, catégorie)\nUne couleur distincte par catégorie\n\n<span class="hi">Couleurs graduées</span> → données numériques continues\n(population, température)\nGamme clair → foncé`
+  },
+  {
+    cat: "Types de cartes",
+    q: "C'est quoi un Flow map ? Et un Dot density ?",
+    a: `<span class="hi">Flow map</span> → représente des flux / mouvements\nEpaisseur de ligne = volume\nEx: migrations, trafic\n\n<span class="hi">Dot density</span> → chaque point = une quantité\nEx: 1 point = 100 habitants`
+  },
+  {
+    cat: "Couleurs",
+    q: "3 types de schémas de couleurs.\nCite-les et explique chacun.",
+    a: `<span class="hi">Séquentiel</span> → une direction, clair → foncé\nEx: densité de population\n\n<span class="hi">Divergent</span> → deux directions depuis un centre neutre\nEx: températures (froid ← 0 → chaud)\n\n<span class="hi">Qualitatif</span> → catégories sans ordre\nEx: types d'occupation du sol`
+  },
+  {
+    cat: "Classification",
+    q: "Equal Interval vs Quantile :\nquelle est la différence ?",
+    a: `<span class="hi">Equal Interval</span> → même PLAGE de valeurs par classe\nRisque : classes vides si données asymétriques\n\n<span class="hi">Quantile</span> → même NOMBRE de features par classe\nRisque : valeurs très différentes dans une même classe`
+  },
+  {
+    cat: "Classification",
+    q: "Quand utilise-t-on Natural Breaks (Jenks) ?",
+    a: `Quand les données ont des <span class="hi">groupes naturels</span>.\n\nL'algorithme détecte les sauts dans les données\net place les limites de classes à ces endroits.\n\nEx: températures avec clusters froid/tempéré/chaud.`
+  },
+  {
+    cat: "Éléments carto",
+    q: "Cite les 5 éléments obligatoires\nd'une carte imprimée (layout).",
+    a: `<span class="hi">Titre\nLégende\nBarre d'échelle\nFlèche nord\nSource / crédits</span>\n\n<span class="warn">Table attributaire ≠ élément carto\nSystème de coordonnées ≠ élément carto</span>`
+  },
+  {
+    cat: "Éléments carto",
+    q: "Layout vs Map Frame :\nquelle est la différence ?",
+    a: `<span class="hi">Layout</span> → la page entière (A4, A3...)\nContient tous les éléments : titre, légende, nord...\n\n<span class="hi">Map Frame</span> → la fenêtre géographique\nà l'intérieur du layout\nC'est là où s'affiche la carte elle-même.`
+  },
+  {
+    cat: "Labeling",
+    q: "Maplex vs Standard Label Engine :\nlequel est le défaut et qu'est-ce qui est exclusif ?",
+    a: `<span class="hi">Maplex</span> = moteur PAR DÉFAUT dans ArcGIS Pro\n\nExclusif à Maplex (fitting strategy) :\n→ <span class="hi">Stack</span> : mots empilés verticalement\n→ <span class="hi">Overrun</span> : label déborde hors du polygone\n→ <span class="hi">Abbreviate</span> : raccourcit automatiquement`
+  },
+  {
+    cat: "Labeling",
+    q: "Quelle police pour routes et villes ?\nQuelle police pour rivières et lacs ?",
+    a: `Routes / Villes (artificiel) → <span class="hi">Sans-serif</span>\nEx: Arial, Calibri — droit, lisible\n\nRivières / Lacs / Montagnes (naturel) → <span class="hi">Serif ou Italique</span>\nEx: Times New Roman — courbé, organique\n\n<span class="warn">Astuce : Nature = Italique = courbé comme une rivière</span>`
+  },
+
+  // ── PROCESSING & ANALYSIS ────────────────────────────────────────────────
+  {
+    cat: "Geoprocessing",
+    q: "Clip vs Intersect :\nquelle est la différence clé ?",
+    a: `<span class="hi">Clip</span> → cookie cutter\nGarde les features de l'INPUT dans la zone\n<span class="warn">Attributs INPUT seulement</span>\n\n<span class="hi">Intersect</span> → garde la zone de chevauchement\n<span class="warn">Attributs des DEUX couches conservés</span>`
+  },
+  {
+    cat: "Geoprocessing",
+    q: "Dissolve vs Union :\nquelle est la différence ?",
+    a: `<span class="hi">Dissolve</span> → 1 seule couche en entrée\nFusionne les features qui partagent\nla même valeur d'attribut\n\n<span class="hi">Union</span> → 2 couches en entrée\nGarde TOUT (chevauchements + non-chevauchements)\nAttributs des deux couches conservés`
+  },
+  {
+    cat: "Geoprocessing",
+    q: "Merge vs Union :\nquelle est la différence fondamentale ?",
+    a: `<span class="hi">Merge</span> → empile deux fichiers du même type\nPAS d'opération spatiale\nEx: communes 2023 + communes 2024 → 1 fichier\n\n<span class="hi">Union</span> → opération spatiale\nCombine deux couches géographiquement`
+  },
+  {
+    cat: "Geoprocessing",
+    q: "Spatial Join : c'est quoi ?\nEn quoi c'est différent d'Intersect ?",
+    a: `<span class="hi">Spatial Join</span> → transfère des attributs\nd'une couche à l'autre par position\n<span class="warn">La géométrie ne change PAS</span>\n\n<span class="hi">Intersect</span> → crée une NOUVELLE géométrie\n(zone de chevauchement) + attributs des 2 couches`
+  },
+  {
+    cat: "6 Catégories",
+    q: "Cite les 6 catégories d'analyse spatiale.",
+    a: `1. <span class="hi">Understand where</span> — Où est quoi ?\n2. <span class="hi">Measure size/shape/distrib.</span> — Superficie, distribution ?\n3. <span class="hi">Determine how places relate</span> — Proche, dans, chevauche ?\n4. <span class="hi">Find best locations/paths</span> — Meilleur emplacement/itinéraire ?\n5. <span class="hi">Detect and quantify patterns</span> — Hot spots, clusters ?\n6. <span class="hi">Make predictions</span> — Comment ça va évoluer ?`
+  },
+  {
+    cat: "6 Catégories",
+    q: "Detect patterns vs Find best locations :\ncomment les distinguer ?",
+    a: `<span class="hi">Detect patterns</span> → cherche des clusters EXISTANTS\ndans des données actuelles\nEx: concentration de crimes cette semaine\n\n<span class="hi">Find best locations</span> → cherche le MEILLEUR endroit\npour quelque chose de NOUVEAU\nEx: où construire un lycée ?`
+  },
+  {
+    cat: "Workflow",
+    q: "Cite les 7 étapes du workflow d'analyse spatiale dans l'ordre.",
+    a: `1. <span class="hi">Ask questions</span>\n2. <span class="hi">Explore & prepare data</span>\n3. <span class="hi">Analyze and model</span>\n4. <span class="hi">Interpret results</span>\n5. <span class="hi">Repeat or modify</span>\n6. <span class="hi">Present results</span>\n7. <span class="hi">Make decisions</span>\n\n<span class="warn">A → E → A → I → R → P → D</span>`
+  },
+  {
+    cat: "Workflow",
+    q: "Un analyste découvre après l'analyse qu'il a oublié\nune variable. Quelle étape du workflow ?",
+    a: `<span class="hi">Repeat or modify</span>\n\nC'est la réponse quand :\n→ un paramètre a été oublié\n→ les résultats semblent incorrects\n→ une nouvelle donnée doit être intégrée\n\n<span class="warn">PAS "Explore & prepare" directement</span>`
+  },
+  {
+    cat: "Snapping",
+    q: "Cite les 7 types de snapping.",
+    a: `<span class="hi">Edge</span> → segment d'une ligne/polygone\n<span class="hi">Vertex</span> → sommet d'une ligne/polygone\n<span class="hi">Point</span> → point feature\n<span class="hi">Endpoint</span> → début ou fin d'une ligne\n<span class="hi">Intersection</span> → croisement de deux lignes\n<span class="hi">Midpoint</span> → milieu d'un segment\n<span class="hi">Tangent</span> → point de tangence d'une courbe`
+  },
+  {
+    cat: "Snapping",
+    q: "Tu veux connecter une ligne au croisement exact de deux routes.\nQuel snapping ?",
+    a: `<span class="hi">Intersection snapping</span>\n\nSnap sur le point où deux polylines\nou polygones se croisent.`
+  },
+  {
+    cat: "Snapping",
+    q: "Tu veux connecter une ligne à la FIN exacte d'une autre ligne.\nQuel snapping ?",
+    a: `<span class="hi">Endpoint snapping</span>\n\nSnap sur le premier ou le dernier point\nd'une polyline ou d'un polygone.`
+  },
+
+  // ── CONTENT MANAGEMENT & SHARING ────────────────────────────────────────
+  {
+    cat: "Sharing levels",
+    q: "Cite les 4 niveaux de partage ArcGIS Online\ndu plus restrictif au plus ouvert.",
+    a: `1. <span class="hi">Private</span> → toi + admin seulement\n2. <span class="hi">Group</span> → membres du groupe seulement\n3. <span class="hi">Organization</span> → tous les membres de l'org\n4. <span class="hi">Public</span> → tout internet sans compte`
+  },
+  {
+    cat: "Sharing levels",
+    q: "Une carte référence 2 layers :\nune partagée au groupe Marketing, l'autre publique.\nQui peut tout voir ?",
+    a: `<span class="hi">Membres du groupe Marketing</span>\n\nPour voir TOUS les layers, il faut avoir accès\nà CHACUN d'eux.\nLe layer Marketing bloque les non-membres.\n\n<span class="warn">Le public voit la carte mais PAS le layer restreint.</span>`
+  },
+  {
+    cat: "Rôles",
+    q: "Cite les 6 rôles ArcGIS Online dans l'ordre croissant de privilèges.",
+    a: `1. <span class="hi">Viewer</span> → consulte seulement\n2. <span class="hi">Data Editor</span> → Viewer + édite les features\n3. <span class="hi">User</span> → crée, partage, rejoint des groupes\n4. <span class="hi">Publisher</span> → User + publie web layers + analyse\n5. <span class="hi">Facilitator</span> → Publisher + invite collabs externes\n6. <span class="hi">Administrator</span> → tout + gère l'organisation`
+  },
+  {
+    cat: "Rôles",
+    q: "Quelle est la différence entre Publisher et Facilitator ?",
+    a: `<span class="hi">Publisher</span> → publie des web layers + analyse\n\n<span class="hi">Facilitator</span> → tout ce que fait Publisher +\n→ invite des membres d'autres organisations\n→ crée des groupes de collaboration partenaires\n→ gère les shared update groups`
+  },
+  {
+    cat: "Layer types",
+    q: "Feature layer vs Tile layer :\nquelle est la différence clé ?",
+    a: `<span class="hi">Feature layer</span> → points/lignes/polygones\nEditable, pop-ups, analysable\nCouche OPÉRATIONNELLE\n\n<span class="hi">Tile layer</span> → images pré-rendues statiques\nRapide à afficher, non éditable\nSouvent utilisé comme <span class="warn">BASEMAP</span>`
+  },
+  {
+    cat: "Layer types",
+    q: "Cite les 7 types de web layers dans ArcGIS Online.",
+    a: `<span class="hi">Feature</span> → vecteur, éditable, pop-ups\n<span class="hi">Tile</span> → images pré-rendues, basemap\n<span class="hi">Map image</span> → carto par localisation/échelle\n<span class="hi">Imagery</span> → raster, télédétection\n<span class="hi">Elevation</span> → terrain 3D\n<span class="hi">Scene</span> → objets 3D\n<span class="hi">Table</span> → données sans géométrie`
+  },
+  {
+    cat: "Pièges exam",
+    q: "Quelle étape est obligatoire avant de partager\nune carte depuis ArcGIS Pro ?",
+    a: `<span class="hi">Validate map</span>\n\nDoit être fait AVANT le partage depuis ArcGIS Pro.\nVérifie que la carte est prête pour la publication.\n\nEnsuite : Share → Web Map ou Web Layer.`
+  },
+  {
+    cat: "Pièges exam",
+    q: "Sur la page item d'ArcGIS Online,\noù trouve-t-on la source des données ?",
+    a: `<span class="hi">Acknowledgments</span>\n\nPas dans Tags, pas dans Owner, pas dans Help.\n\n<span class="warn">Acknowledgments = source + crédits + licence</span>`
+  },
+  {
+    cat: "Pièges exam",
+    q: "Avant de partager une couche avec son équipe,\nquelle action doit faire l'analyste en PREMIER ?",
+    a: `<span class="hi">Compléter les item details</span>\n\n→ Titre, résumé, description, tags, crédits\n\nPuis seulement partager.\n<span class="warn">Pas créer une web app, pas ajouter à une carte d'abord.</span>`
+  }
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let deck = [];
+let current = 0;
+let flipped = false;
+let okCount = 0;
+let missCount = 0;
+let missed = [];
+let activeCat = 'Tous';
+
+const cats = ['Tous', ...new Set(ALL_CARDS.map(c => c.cat))];
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+function buildCats() {
+  const el = document.getElementById('cats');
+  cats.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (c === 'Tous' ? ' active' : '');
+    btn.textContent = c;
+    btn.onclick = () => selectCat(c);
+    el.appendChild(btn);
+  });
+}
+
+function selectCat(cat) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === cat);
+  });
+  restartAll();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startDeck(cards) {
+  deck = shuffle([...cards]);
+  current = 0; flipped = false; okCount = 0; missCount = 0; missed = [];
+  document.getElementById('done-screen').style.display = 'none';
+  document.getElementById('card-wrap').style.display = 'block';
+  document.querySelectorAll('.controls, .score-row, .kb-hint, .progress-row').forEach(e => e.style.display = '');
+  updateScore();
+  loadCard();
+}
+
+function restartAll() {
+  const cards = activeCat === 'Tous' ? ALL_CARDS : ALL_CARDS.filter(c => c.cat === activeCat);
+  startDeck(cards);
+}
+
+function restartMissed() {
+  if (missed.length === 0) return;
+  startDeck(missed);
+}
+
+// ── CARD ───────────────────────────────────────────────────────────────────
+function loadCard() {
+  if (current >= deck.length) { showDone(); return; }
+  const card = deck[current];
+  flipped = false;
+  document.getElementById('card-wrap').classList.remove('flipped');
+  document.getElementById('front-tag').textContent = card.cat;
+  document.getElementById('front-q').textContent = card.q;
+  document.getElementById('back-tag').textContent = card.cat + ' — Réponse';
+  document.getElementById('back-a').innerHTML = card.a;
+  updateProgress();
+}
+
+function flipCard() {
+  flipped = !flipped;
+  document.getElementById('card-wrap').classList.toggle('flipped', flipped);
+}
+
+function markCard(knew) {
+  if (knew) { okCount++; }
+  else { missCount++; missed.push(deck[current]); }
+  current++;
+  flipped = false;
+  updateScore();
+  loadCard();
+}
+
+// ── PROGRESS ───────────────────────────────────────────────────────────────
+function updateProgress() {
+  const total = deck.length;
+  const idx = current + 1;
+  const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+  document.getElementById('prog-label').textContent = `${idx} / ${total}`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+function updateScore() {
+  document.getElementById('s-ok').textContent = okCount;
+  document.getElementById('s-miss').textContent = missCount;
+  document.getElementById('s-left').textContent = deck.length - current;
+}
+
+// ── DONE ───────────────────────────────────────────────────────────────────
+function showDone() {
+  document.getElementById('card-wrap').style.display = 'none';
+  document.querySelectorAll('.controls, .kb-hint, .progress-row').forEach(e => e.style.display = 'none');
+  const ds = document.getElementById('done-screen');
+  ds.style.display = 'block';
+  const total = okCount + missCount;
+  const pct = total > 0 ? Math.round((okCount / total) * 100) : 0;
+  document.getElementById('done-score').textContent = `${okCount}/${total}`;
+  document.getElementById('done-sub').textContent =
+    pct >= 80 ? `${pct}% — Solide. Refais les ratés une fois.` :
+    pct >= 60 ? `${pct}% — Bien. Ces fiches reviennent demain matin.` :
+    `${pct}% — À retravailler. Lance "Revoir les ratés".`;
+
+  if (missed.length > 0) {
+    document.getElementById('missed-title').textContent = `${missed.length} carte(s) ratée(s) — à revoir`;
+    const list = document.getElementById('missed-list');
+    list.innerHTML = '';
+    missed.forEach(c => {
+      const d = document.createElement('div');
+      d.className = 'missed-item';
+      d.innerHTML = `<strong>${c.q.split('\n')[0]}</strong>${c.cat}`;
+      list.appendChild(d);
+    });
+    document.getElementById('btn-missed-only').style.display = '';
+  } else {
+    document.getElementById('missed-title').textContent = '🎯 Aucune carte ratée !';
+    document.getElementById('missed-list').innerHTML = '';
+    document.getElementById('btn-missed-only').style.display = 'none';
+  }
+}
+
+// ── KEYBOARD ───────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (current >= deck.length) return;
+  if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+  if (e.code === 'ArrowRight') markCard(true);
+  if (e.code === 'ArrowLeft') markCard(false);
+});
+
+// ── BOOT ───────────────────────────────────────────────────────────────────
+buildCats();
+restartAll();
+</script>
+</body>
+</html>

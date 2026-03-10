@@ -154,6 +154,11 @@
       color: #60c8f0;
     }
 
+    .tag.flashcard {
+      border-color: #f08860;
+      color: #f08860;
+    }
+
     .arrow {
       font-size: 1rem;
       transition: transform 0.15s, color 0.15s;
@@ -167,6 +172,10 @@
 
     .quiz-card.cours:hover .arrow {
       color: #60c8f0;
+    }
+
+    .quiz-card.flashcards:hover .arrow {
+      color: #f08860;
     }
 
     footer {
@@ -201,6 +210,25 @@
         </div>
         <div class="card-right">
           <span class="tag fiche">Fiche</span>
+          <span class="arrow">&#x2192;</span>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="section-label">Flashcards disponibles</div>
+    <div class="quiz-grid" style="margin-bottom:2.5rem;">
+
+      <a class="quiz-card flashcards" href="./flashcards/">
+        <div class="card-left">
+          <span class="card-index">01</span>
+          <div>
+            <div class="card-title">GIS Foundation — Flashcards</div>
+            <div class="card-meta">R&#233;vision rapide &#183; Concepts et d&#233;finitions</div>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="tag flashcard">Cartes</span>
           <span class="arrow">&#x2192;</span>
         </div>
       </a>
