@@ -1,0 +1,57 @@
+baseURL: "https://lorenzo1208.github.io/"
+title: "LoLog"
+languageCode: "fr"
+defaultContentLanguage: "fr"
+paginate: 10
+theme: PaperMod
+
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  defaultTheme: dark
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowRssButtonInSectionTermList: true
+  ShowToc: true
+
+  homeInfoParams:
+    Title: "Bienvenue sur LoLog"
+    Content: "Mon blog personnel."
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/Lorenzo1208"
+
+menu:
+  main:
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 10
+    - identifier: archive
+      name: Archive
+      url: /archives/
+      weight: 20
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 30
+    - identifier: quizhub
+      name: Quiz Hub
+      url: /quizhub/
+      weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
