@@ -1,9 +1,9 @@
 ---
-title: "Reinforcement Learning — Du Zéro à Taxi-v3"
+title: "Reinforcement Learning Feynman"
 date: 2026-03-26
 draft: false
 tags: ["IA", "reinforcement learning"]
-description: "Du zéro absolu jusqu'à un taxi autonome. Q-Learning, SARSA, epsilon decay — expliqué comme si t'avais 10 ans, avec les maths quand même."
+description: "Du zéro absolu jusqu'à un taxi autonome. Q-Learning, SARSA, epsilon decay : expliqué comme si t'avais 10 ans, avec les maths quand même."
 layout: "article"
 ---
 
@@ -344,9 +344,9 @@ layout: "article"
 <div class="rl-wrap">
 
 <div class="hero">
-  <div class="hero-label">Epitech · Taxi Driver Project</div>
+  <div class="hero-label">Feynman Style</div>
   <h1>Reinforcement<br>Learning</h1>
-  <p class="hero-sub">Du zéro absolu jusqu'à un taxi autonome. Expliqué comme si t'avais 10 ans — avec les maths quand même.</p>
+  <p class="hero-sub">Du zéro absolu jusqu'à un taxi autonome. Expliqué comme si t'avais 10 ans, avec les maths quand même.</p>
 </div>
 
 <nav class="toc">
@@ -378,7 +378,7 @@ layout: "article"
   </div>
   <div class="feynman-close">
     <div class="label">La chose que tu sais maintenant</div>
-    <p>Le RL, c'est juste un système States → Actions → Rewards en boucle. Tout le reste — Q-learning, réseaux de neurones, SARSA — c'est juste des façons différentes de gérer cette boucle.</p>
+    <p>Le RL, c'est juste un système States → Actions → Rewards en boucle. Tout le reste (Q-learning, réseaux de neurones, SARSA) c'est juste des façons différentes de gérer cette boucle.</p>
   </div>
 </div>
 </div>
@@ -388,7 +388,7 @@ layout: "article"
   <div class="section-label">Section 02</div>
   <h2>L'environnement Taxi-v3</h2>
   <p>Maintenant on applique ça à notre problème. Taxi-v3 c'est un environnement fourni par la bibliothèque <code>Gymnasium</code>. Un terrain de jeu 5×5 cases, un taxi, un passager, une destination. Simple en apparence. Riche en pratique.</p>
-  <h3>Les états — 500, pas moins</h3>
+  <h3>Les états : 500, pas moins</h3>
   <p>Combien de situations différentes le taxi peut-il vivre ? On compte :</p>
   <div class="formula-block">
     <div class="formula-main">
@@ -397,11 +397,11 @@ layout: "article"
     <div class="formula-legend">
       <div class="formula-item"><span class="formula-symbol fy">25</span><div class="formula-desc"><strong>Grille 5×5</strong>25 cases où le taxi peut se trouver</div></div>
       <div class="formula-item"><span class="formula-symbol fa">5</span><div class="formula-desc"><strong>Position du passager</strong>4 lieux (R,G,Y,B) + 1 cas "dans le taxi"</div></div>
-      <div class="formula-item"><span class="formula-symbol fg">4</span><div class="formula-desc"><strong>Destinations</strong>R, G, Y, B — les 4 coins du terrain</div></div>
+      <div class="formula-item"><span class="formula-symbol fg">4</span><div class="formula-desc"><strong>Destinations</strong>R, G, Y, B : les 4 coins du terrain</div></div>
       <div class="formula-item"><span class="formula-symbol fp">500</span><div class="formula-desc"><strong>États totaux</strong>25 × 5 × 4 = 500 situations possibles</div></div>
     </div>
   </div>
-  <h3>Les actions — 6 choix à chaque instant</h3>
+  <h3>Les actions : 6 choix à chaque instant</h3>
   <div class="cards">
     <div class="card"><div class="card-icon">⬆️</div><h4>Nord</h4><p>Monter d'une case</p></div>
     <div class="card"><div class="card-icon">⬇️</div><h4>Sud</h4><p>Descendre d'une case</p></div>
@@ -410,12 +410,12 @@ layout: "article"
     <div class="card"><div class="card-icon">🙋</div><h4>Ramasser</h4><p>Prendre le passager</p></div>
     <div class="card"><div class="card-icon">🏁</div><h4>Déposer</h4><p>Laisser le passager</p></div>
   </div>
-  <h3>Les récompenses — le signal d'apprentissage</h3>
+  <h3>Les récompenses : le signal d'apprentissage</h3>
   <p>C'est <strong>ici</strong> que tout se joue. La définition des récompenses dicte entièrement ce que l'agent va apprendre. Mal défini → agent stupide. Bien défini → agent efficace.</p>
   <table class="reward-table">
     <thead><tr><th>Événement</th><th>Récompense</th><th>Pourquoi</th></tr></thead>
     <tbody>
-      <tr><td>Déposer au bon endroit</td><td class="reward-pos">+20</td><td>C'est l'objectif final — grosse récompense</td></tr>
+      <tr><td>Déposer au bon endroit</td><td class="reward-pos">+20</td><td>C'est l'objectif final : grosse récompense</td></tr>
       <tr><td>Chaque step (mouvement)</td><td class="reward-neg">−1</td><td>Encourage à aller vite, pas à tourner en rond</td></tr>
       <tr><td>Ramasser/déposer au mauvais endroit</td><td class="reward-neg">−10</td><td>Pénalise les erreurs graves</td></tr>
     </tbody>
@@ -430,7 +430,7 @@ layout: "article"
 <div id="brute" class="section">
 <div class="container">
   <div class="section-label">Section 03</div>
-  <h2>L'agent aléatoire — la baseline brute force</h2>
+  <h2>L'agent aléatoire : la baseline brute force</h2>
   <p>Avant d'apprendre quoi que ce soit, on teste un agent qui fait des actions complètement aléatoires. Pas pour être nul. Pour avoir un point de comparaison honnête.</p>
   <div class="pullquote"><p>Un agent sans mémoire ne peut jamais s'améliorer. Il refait les mêmes erreurs à l'infini, sans jamais remarquer qu'il les fait.</p></div>
   <p>À chaque état, il tire au hasard parmi les 6 actions. Il n'a aucune mémoire des coups précédents. Il ne sait pas ce qui a marché. Il ne sait pas ce qui a échoué. Il est aussi "intelligent" qu'un dé à six faces.</p>
@@ -438,10 +438,10 @@ layout: "article"
     <div class="step-card bad"><div class="step-method">Agent aléatoire</div><div class="step-number">~350</div><div class="step-label">steps en moyenne</div></div>
     <div class="step-card good"><div class="step-method">Q-Learning optimisé</div><div class="step-number">~13</div><div class="step-label">steps en moyenne</div></div>
   </div>
-  <p>Ce ratio est ton argument principal dans le rapport Epitech. L'agent aléatoire prend 350 steps là où Q-learning en prend 13. C'est 27× plus efficace. Et la seule différence, c'est la mémoire.</p>
+  <p>Ce ratio illustre bien la différence. L'agent aléatoire prend 350 steps là où Q-learning en prend 13. C'est 27x plus efficace. Et la seule différence, c'est la mémoire.</p>
   <div class="feynman-close">
     <div class="label">La chose que tu sais maintenant</div>
-    <p>La brute force est pas "stupide" — elle est optimale sans information. C'est le plafond du hasard pur. Tout ce qu'on fait après, c'est ajouter de la mémoire organisée.</p>
+    <p>La brute force est pas "stupide", elle est optimale sans information. C'est le plafond du hasard pur. Tout ce qu'on fait après, c'est ajouter de la mémoire organisée.</p>
   </div>
 </div>
 </div>
@@ -449,7 +449,7 @@ layout: "article"
 <div id="qtable" class="section">
 <div class="container">
   <div class="section-label">Section 04</div>
-  <h2>La Q-Table — la mémoire du taxi</h2>
+  <h2>La Q-Table : la mémoire du taxi</h2>
   <p>La Q-Table est l'idée centrale du Q-learning. Et c'est beaucoup plus simple que son nom le laisse croire.</p>
   <p>Imagine un tableau à deux axes. En lignes : tous les états (500). En colonnes : toutes les actions (6). Dans chaque case : un nombre. Ce nombre s'appelle une <strong>Q-value</strong>.</p>
   <div class="pullquote"><p>Le Q dans Q-value veut dire "Quality". C'est littéralement la qualité estimée d'une action depuis un état donné.</p></div>
@@ -478,7 +478,7 @@ layout: "article"
 <div id="formule" class="section">
 <div class="container">
   <div class="section-label">Section 05</div>
-  <h2>La formule de mise à jour — mot par mot</h2>
+  <h2>La formule de mise à jour : mot par mot</h2>
   <p>Voilà la formule centrale du Q-learning. Elle fait peur au premier coup d'œil. On va la décortiquer lettre par lettre jusqu'à ce qu'elle devienne évidente.</p>
   <div class="formula-block">
     <div class="formula-main">
@@ -486,9 +486,9 @@ layout: "article"
     </div>
     <div class="formula-legend">
       <div class="formula-item"><span class="formula-symbol fy">Q(s,a)</span><div class="formula-desc"><strong>La Q-value actuelle</strong>Ce que le taxi pense de l'action a depuis l'état s en ce moment.</div></div>
-      <div class="formula-item"><span class="formula-symbol fa">α</span><div class="formula-desc"><strong>Alpha — taux d'apprentissage</strong>À quelle vitesse on remplace l'ancien avis par le nouveau. Entre 0 et 1.</div></div>
-      <div class="formula-item"><span class="formula-symbol fr">r</span><div class="formula-desc"><strong>Reward — récompense immédiate</strong>Le score reçu juste après avoir fait l'action. +20, −1, ou −10.</div></div>
-      <div class="formula-item"><span class="formula-symbol fg">γ</span><div class="formula-desc"><strong>Gamma — facteur d'actualisation</strong>À quel point on valorise les récompenses futures par rapport à maintenant. Entre 0 et 1.</div></div>
+      <div class="formula-item"><span class="formula-symbol fa">α</span><div class="formula-desc"><strong>Alpha : taux d'apprentissage</strong>À quelle vitesse on remplace l'ancien avis par le nouveau. Entre 0 et 1.</div></div>
+      <div class="formula-item"><span class="formula-symbol fr">r</span><div class="formula-desc"><strong>Reward : récompense immédiate</strong>Le score reçu juste après avoir fait l'action. +20, −1, ou −10.</div></div>
+      <div class="formula-item"><span class="formula-symbol fg">γ</span><div class="formula-desc"><strong>Gamma : facteur d'actualisation</strong>À quel point on valorise les récompenses futures par rapport à maintenant. Entre 0 et 1.</div></div>
       <div class="formula-item"><span class="formula-symbol fp">max Q(s',a')</span><div class="formula-desc"><strong>Meilleure Q-value future</strong>Le meilleur score que le taxi pense pouvoir obtenir depuis le prochain état s'.</div></div>
       <div class="formula-item"><span class="formula-symbol fy">[...]</span><div class="formula-desc"><strong>L'erreur TD (Temporal Difference)</strong>La différence entre ce qu'on espérait et ce qu'on a vraiment eu. Le moteur de la mise à jour.</div></div>
     </div>
@@ -498,7 +498,7 @@ layout: "article"
   <p>Le crochet <code>[ r + γ·max Q(s',a') − Q(s,a) ]</code> c'est exactement ça : l'écart entre l'espoir et la réalité. Si t'as eu mieux que prévu → la Q-value monte. Si t'as eu moins bien que prévu → elle descend.</p>
   <p>Et <code>α</code> contrôle à quelle vitesse tu mets à jour ton opinion. <code>α = 1.0</code> → tu remplaces complètement ton ancien avis par le nouveau. <code>α = 0.1</code> → tu fais une petite correction de 10%. En pratique, on utilise une valeur basse pour stabiliser l'apprentissage.</p>
   <h3>L'analogie de la note scolaire</h3>
-  <p>Imagine que ton prof note un devoir. Il avait une attente. Toi, tu as rendu quelque chose. La différence entre son attente et ta copie, c'est l'erreur. Il ajuste sa note en conséquence — mais pas d'un coup brutal. Un petit peu. C'est exactement α × erreur.</p>
+  <p>Imagine que ton prof note un devoir. Il avait une attente. Toi, tu as rendu quelque chose. La différence entre son attente et ta copie, c'est l'erreur. Il ajuste sa note en conséquence, mais pas d'un coup brutal. Un petit peu. C'est exactement α × erreur.</p>
   <div class="feynman-close">
     <div class="label">La chose que tu sais maintenant</div>
     <p>Cette formule ne dit pas "voilà la bonne réponse". Elle dit "voilà comment corriger légèrement ton erreur actuelle". C'est ça l'apprentissage itératif. Chaque épisode est une petite correction, pas une révélation.</p>
@@ -510,11 +510,11 @@ layout: "article"
 <div class="container">
   <div class="section-label">Section 06</div>
   <h2>Les 3 hyperparamètres</h2>
-  <p>Les hyperparamètres sont les boutons que <em>toi</em> tu règles avant l'entraînement. Ton agent ne les apprend pas — tu les choisis. Et ils changent tout.</p>
+  <p>Les hyperparamètres sont les boutons que <em>toi</em> tu règles avant l'entraînement. Ton agent ne les apprend pas, tu les choisis. Et ils changent tout.</p>
   <div class="hyperparam">
     <div class="hyperparam-header">
       <div class="hyperparam-symbol alpha">α</div>
-      <div class="hyperparam-info"><h4>Alpha — le taux d'apprentissage</h4><p>À quelle vitesse le taxi met à jour ses croyances</p></div>
+      <div class="hyperparam-info"><h4>Alpha : le taux d'apprentissage</h4><p>À quelle vitesse le taxi met à jour ses croyances</p></div>
     </div>
     <div class="hyperparam-body">
       <span class="range">Intervalle : 0.0 → 1.0 · Valeur typique : 0.1</span>
@@ -526,7 +526,7 @@ layout: "article"
   <div class="hyperparam">
     <div class="hyperparam-header">
       <div class="hyperparam-symbol gamma">γ</div>
-      <div class="hyperparam-info"><h4>Gamma — le facteur d'actualisation</h4><p>À quel point l'agent valorise le futur par rapport au présent</p></div>
+      <div class="hyperparam-info"><h4>Gamma : le facteur d'actualisation</h4><p>À quel point l'agent valorise le futur par rapport au présent</p></div>
     </div>
     <div class="hyperparam-body">
       <span class="range">Intervalle : 0.0 → 1.0 · Valeur typique : 0.6 – 0.99</span>
@@ -538,7 +538,7 @@ layout: "article"
   <div class="hyperparam">
     <div class="hyperparam-header">
       <div class="hyperparam-symbol epsilon">ε</div>
-      <div class="hyperparam-info"><h4>Epsilon — le taux d'exploration</h4><p>La probabilité de choisir une action aléatoire plutôt que la meilleure connue</p></div>
+      <div class="hyperparam-info"><h4>Epsilon : le taux d'exploration</h4><p>La probabilité de choisir une action aléatoire plutôt que la meilleure connue</p></div>
     </div>
     <div class="hyperparam-body">
       <span class="range">Intervalle : 0.0 → 1.0 · Valeur initiale typique : 1.0</span>
@@ -569,7 +569,7 @@ layout: "article"
       <div class="formula-item"><span class="formula-symbol fg">argmax</span><div class="formula-desc"><strong>Meilleure action connue</strong>L'action avec la plus haute Q-value depuis l'état actuel. Phase d'exploitation.</div></div>
     </div>
   </div>
-  <h3>L'Epsilon Decay — la décroissance progressive</h3>
+  <h3>L'Epsilon Decay : la décroissance progressive</h3>
   <p>L'idée géniale : commencer avec ε = 1.0 (100% exploration) et le diminuer progressivement après chaque épisode. Le taxi explore tout au début, puis exploite de plus en plus ce qu'il a appris.</p>
   <div class="formula-block">
     <div class="formula-main">
@@ -607,8 +607,8 @@ layout: "article"
     <div class="formula-card ql"><h5>Q-Learning (off-policy)</h5><div class="fm">Q(s,a) ← Q(s,a) + α<br>× [r + γ ×<br><span class="diff-ql">max Q(s', a')</span><br>− Q(s,a)]</div></div>
     <div class="formula-card sa"><h5>SARSA (on-policy)</h5><div class="fm">Q(s,a) ← Q(s,a) + α<br>× [r + γ ×<br><span class="diff-sa">Q(s', a')</span><br>− Q(s,a)]</div></div>
   </div>
-  <p>Tu vois la différence ? Q-Learning utilise <code>max Q(s', a')</code> — la <em>meilleure</em> action possible dans le prochain état, même si l'agent ne la prend pas forcément. SARSA utilise <code>Q(s', a')</code> — l'action que l'agent va <em>vraiment</em> prendre.</p>
-  <h3>Off-policy vs On-policy — l'intuition</h3>
+  <p>Tu vois la différence ? Q-Learning utilise <code>max Q(s', a')</code> : la <em>meilleure</em> action possible dans le prochain état, même si l'agent ne la prend pas forcément. SARSA utilise <code>Q(s', a')</code> : l'action que l'agent va <em>vraiment</em> prendre.</p>
+  <h3>Off-policy vs On-policy : l'intuition</h3>
   <div class="cards">
     <div class="card"><div class="card-icon">🗺️</div><h4>Q-Learning (off-policy)</h4><p>Apprend en imaginant qu'il prendrait toujours la <em>meilleure</em> décision future. Optimiste. Apprend plus vite en théorie.</p></div>
     <div class="card"><div class="card-icon">🚶</div><h4>SARSA (on-policy)</h4><p>Apprend en tenant compte de ce qu'il <em>fait vraiment</em>, y compris ses erreurs d'exploration. Plus prudent et conservateur.</p></div>
@@ -626,7 +626,7 @@ layout: "article"
     </tbody>
   </table>
   <p>Pour Taxi-v3, les deux fonctionnent bien. Q-Learning converge généralement en moins d'épisodes mais peut être un peu plus instable pendant l'entraînement. SARSA est plus prudent.</p>
-  <h3>SARSA — State Action Reward State Action</h3>
+  <h3>SARSA : State Action Reward State Action</h3>
   <p>Le nom SARSA vient de la séquence d'éléments utilisés dans la mise à jour :</p>
   <div class="formula-block">
     <div class="formula-main" style="font-size:16px;letter-spacing:2px;">
@@ -636,7 +636,7 @@ layout: "article"
   <p>La mise à jour utilise exactement ces 5 valeurs. C'est pour ça qu'on dit que SARSA est "on-policy" : il a besoin de savoir <em>quelle action il va vraiment prendre ensuite</em> (A') avant de mettre à jour.</p>
   <div class="feynman-close">
     <div class="label">La chose que tu sais maintenant</div>
-    <p>Q-Learning est un rêveur optimiste — il suppose toujours qu'il fera le meilleur choix futur. SARSA est un réaliste — il inclut ses propres imperfections dans son apprentissage.</p>
+    <p>Q-Learning est un rêveur optimiste, il suppose toujours qu'il fera le meilleur choix futur. SARSA est un réaliste, il inclut ses propres imperfections dans son apprentissage.</p>
   </div>
 </div>
 </div>
@@ -655,8 +655,8 @@ layout: "article"
     <div class="step-card" style="border-color:rgba(0,0,0,0.08)"><div class="step-method">🎯 Optimal théorique</div><div class="step-number">~10</div><div class="step-label">steps (Manhattan distance min)</div></div>
   </div>
   <h3>Ce que révèle ce benchmark</h3>
-  <p>La différence entre brute force et Q-learning, c'est pas une amélioration. C'est un changement de nature. L'agent aléatoire tâtonne. L'agent Q-learning sait. Ce sont deux comportements fondamentalement différents produits par la même boucle d'interaction avec l'environnement — juste avec ou sans mémoire organisée.</p>
-  <p>Le fait que Q-Learning arrive si proche de l'optimal théorique (~10 steps) après seulement 10 000 épisodes montre l'efficacité du Temporal Difference Learning : pas besoin de finir une partie pour apprendre — on apprend à chaque step.</p>
+  <p>La différence entre brute force et Q-learning, c'est pas une amélioration. C'est un changement de nature. L'agent aléatoire tâtonne. L'agent Q-learning sait. Ce sont deux comportements fondamentalement différents produits par la même boucle d'interaction avec l'environnement, juste avec ou sans mémoire organisée.</p>
+  <p>Le fait que Q-Learning arrive si proche de l'optimal théorique (~10 steps) après seulement 10 000 épisodes montre l'efficacité du Temporal Difference Learning : pas besoin de finir une partie pour apprendre, on apprend à chaque step.</p>
   <div class="pullquote"><p>La vraie leçon : ce n'est pas l'algorithme qui fait la différence. C'est la mémoire. Donner une mémoire organisée à un agent, c'est lui donner la capacité d'apprendre.</p></div>
   <div class="feynman-close">
     <div class="label">La chose que tu sais maintenant que la plupart des adultes ne savent pas</div>
@@ -666,8 +666,8 @@ layout: "article"
 </div>
 
 <div class="rl-footer">
-  <strong>Reinforcement Learning — Du Zéro à Taxi-v3</strong><br>
-  Epitech · Taxi Driver Project · Expliqué dans le style Feynman
+  <strong>Reinforcement Learning Feynman</strong><br>
+  Expliqué dans le style Feynman
 </div>
 
 </div>
