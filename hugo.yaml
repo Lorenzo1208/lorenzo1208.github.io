@@ -71,6 +71,11 @@ languages:
           url: /quizhub/
           weight: 40
 
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
 params:
   defaultTheme: dark
   ShowReadingTime: true
