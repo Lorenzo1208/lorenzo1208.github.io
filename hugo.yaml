@@ -25,8 +25,8 @@ params:
   ShowToc: true
 
   homeInfoParams:
-    Title: "Bienvenue sur LoLog"
-    Content: "Mon blog personnel."
+    Title: "👋 Bienvenue sur LoLog"
+    Content: "Je m'appelle Lorenzo, je suis dev. Depuis le 26 mars 2026, je documente ici mes apprentissages — projets, concepts, expérimentations."
 
   socialIcons:
     - name: github
