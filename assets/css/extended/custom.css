@@ -1,0 +1,10 @@
+/* Souligne le menu actif */
+.nav a.active {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* Réduit l'espace entre le bloc intro et les articles */
+.home-info {
+    margin-bottom: 1rem;
+}
