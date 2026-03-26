@@ -97,9 +97,6 @@ layout: "article"
     gap: 0;
     overflow-x: auto;
     scrollbar-width: none;
-    position: sticky;
-    top: 60px;
-    z-index: 99;
   }
   .rl-wrap .toc::-webkit-scrollbar { display: none; }
   .rl-wrap .toc a {
