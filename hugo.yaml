@@ -1,18 +1,75 @@
 baseURL: "https://lorenzo1208.github.io/"
-title: "LoLog"
-languageCode: "fr"
 defaultContentLanguage: "fr"
-pagination:
-  pagerSize: 10
+defaultContentLanguageInSubdir: false
 theme: PaperMod
 
 enableRobotsTXT: true
 buildDrafts: false
 buildFuture: false
 
+pagination:
+  pagerSize: 10
+
 minify:
   disableXML: true
   minifyOutput: true
+
+languages:
+  fr:
+    languageName: "Français"
+    languageCode: "fr"
+    weight: 1
+    title: "LoLog"
+    params:
+      homeInfoParams:
+        Title: "👋 Bienvenue sur LoLog"
+        Content: "Je suis dev et je partage mes idées ici depuis le 26 mars 2026."
+    menu:
+      main:
+        - identifier: posts
+          name: Posts
+          url: /posts/
+          weight: 10
+        - identifier: archive
+          name: Archive
+          url: /archives/
+          weight: 20
+        - identifier: tags
+          name: Tags
+          url: /tags/
+          weight: 30
+        - identifier: quizhub
+          name: Quiz Hub
+          url: /quizhub/
+          weight: 40
+
+  en:
+    languageName: "English"
+    languageCode: "en"
+    weight: 2
+    title: "LoLog"
+    params:
+      homeInfoParams:
+        Title: "👋 Welcome to LoLog"
+        Content: "I'm a dev sharing my ideas here since March 26, 2026."
+    menu:
+      main:
+        - identifier: posts
+          name: Posts
+          url: /en/posts/
+          weight: 10
+        - identifier: archive
+          name: Archive
+          url: /en/archives/
+          weight: 20
+        - identifier: tags
+          name: Tags
+          url: /en/tags/
+          weight: 30
+        - identifier: quizhub
+          name: Quiz Hub
+          url: /quizhub/
+          weight: 40
 
 params:
   defaultTheme: dark
@@ -24,32 +81,9 @@ params:
   ShowRssButtonInSectionTermList: true
   ShowToc: true
 
-  homeInfoParams:
-    Title: "👋 Bienvenue sur LoLog"
-    Content: "Je suis dev et je partage mes idées ici depuis le 26 mars 2026."
-
   socialIcons:
     - name: github
       url: "https://github.com/Lorenzo1208"
-
-menu:
-  main:
-    - identifier: posts
-      name: Posts
-      url: /posts/
-      weight: 10
-    - identifier: archive
-      name: Archive
-      url: /archives/
-      weight: 20
-    - identifier: tags
-      name: Tags
-      url: /tags/
-      weight: 30
-    - identifier: quizhub
-      name: Quiz Hub
-      url: /quizhub/
-      weight: 40
 
 outputs:
   home:
