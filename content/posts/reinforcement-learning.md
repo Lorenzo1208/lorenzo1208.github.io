@@ -2,7 +2,7 @@
 title: "Reinforcement Learning"
 date: 2026-03-26
 draft: false
-tags: ["IA", "machine learning", "recherche"]
+tags: ["IA", "reinforcement learning"]
 description: "Introduction au Reinforcement Learning."
 ---
 

@@ -2,7 +2,7 @@
 title: "T-CLO"
 date: 2026-03-26
 draft: false
-tags: ["projet", "cloud", "devops"]
+tags: ["cloud"]
 description: "Présentation du projet T-CLO."
 ---
 

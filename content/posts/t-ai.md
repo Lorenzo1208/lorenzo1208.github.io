@@ -2,7 +2,7 @@
 title: "T-AI"
 date: 2026-03-26
 draft: false
-tags: ["projet", "IA", "cloud"]
+tags: ["IA", "reinforcement learning"]
 description: "Présentation du projet T-AI."
 ---
 
