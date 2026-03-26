@@ -2,7 +2,8 @@ baseURL: "https://lorenzo1208.github.io/"
 title: "LoLog"
 languageCode: "fr"
 defaultContentLanguage: "fr"
-paginate: 10
+pagination:
+  pagerSize: 10
 theme: PaperMod
 
 enableRobotsTXT: true
