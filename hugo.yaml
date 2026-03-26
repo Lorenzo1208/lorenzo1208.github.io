@@ -26,7 +26,7 @@ params:
 
   homeInfoParams:
     Title: "👋 Bienvenue sur LoLog"
-    Content: "Je m'appelle Lorenzo, je suis dev. Depuis le 26 mars 2026, je documente ici mes apprentissages — projets, concepts, expérimentations."
+    Content: "Je suis dev et je partage mes idées ici depuis le 26 mars 2026."
 
   socialIcons:
     - name: github
