@@ -6,5 +6,6 @@
 
 /* Réduit l'espace entre le bloc intro et les articles */
 .home-info {
-    margin-bottom: 1rem;
+    min-height: unset;
+    margin: 0 0 1rem 0;
 }
